@@ -1,0 +1,8 @@
+#cloud-boothook
+#!/bin/bash
+
+wget https://s3.amazonaws.com/app-bucket-dsp-192-maor-refahel/ManagerApp.jar -O //home/ec2-user/ManagerApp.jar
+
+chmod 777 //home/ec2-user/ManagerApp.jar
+
+java -jar //home/ec2-user/ManagerApp.jar
