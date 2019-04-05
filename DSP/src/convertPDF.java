@@ -74,7 +74,7 @@ public class convertPDF {
 
         // Initialize mAWS object and get a random UUID
         LocalAppID = UUID.randomUUID().toString();
-        mAWS myAWS = new mAWS();
+        mAWS myAWS = new mAWS(true);
         myAWS.initEC2();
         myAWS.initS3();
         String managerID;

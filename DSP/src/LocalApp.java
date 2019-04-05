@@ -1,4 +1,5 @@
 import java.io.*;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -8,6 +9,7 @@ import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.ec2.model.InstanceType;
 import com.amazonaws.services.ec2.model.Tag;
+import com.amazonaws.services.s3.AmazonS3URI;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.sqs.model.Message;
 
@@ -31,6 +33,9 @@ public class LocalApp {
     private static String shortLocalAppID;
 
     public static void main( String[] args ){
+
+        java.util.logging.Logger
+                .getLogger("com.amazonaws.util.Base64").setLevel(Level.OFF);
 
         // General vars
         String inputFileName = args[0];
@@ -99,25 +104,25 @@ public class LocalApp {
             String msg = LocalAppID + " " + terminate + " " + n + " " + uploadedFileURL;
             send2SQS(myAWS, msg);
             if (terminate){
-                System.out.println(" Stage 4|    Terminate message has been sent to the SQS queue with the following message :");
+                System.out.println(" Stage 4|    Terminate message has been sent to the SQS queue with the following message : \n");
                 System.out.println("             " + msg + "\n");
             }else{
-                System.out.println(" Stage 4|    The file URL has been sent to the SQS queue with the following message :");
+                System.out.println(" Stage 4|    The file URL has been sent to the SQS queue with the following message : \n");
                 System.out.println("             " + msg + "\n");
             }
 
-//            /** 5. Wait & Receive the response from the Manager instance for the operation that has been requested*/
-//            System.out.println(" Stage 5|    Waiting for response from the Manager...");
-//            waitForAnswer(myAWS, LocalAppID, 2500);
-//            System.out.println("             Response from the Manager is ready in S3 storage \n");
+            /** 5. Wait & Receive the response from the Manager instance for the operation that has been requested*/
+            System.out.println(" Stage 5|    Waiting for response from the Manager... \n");
+            String resultURL = waitForAnswer(myAWS, shortLocalAppID, 2000);
+            System.out.println("             Response from the Manager is ready on : "+ resultURL + "\n");
 //
 //
-//            /** 6. Download the operation summary file from S3 & Create an HTML file representing the results*/
-//            String outputFilePath = downloadResult(myAWS, outputFileName);
-//            System.out.println(" Stage 6|    Summary file received in the Local AWS App \n");
-//            System.out.println("             HTML file representing the results has been created on " + outputFilePath + "\n");
-//
-//
+            /** 6. Download the operation summary file from S3 & Create an HTML file representing the results*/
+            String outputFilePath = downloadResult(myAWS, resultURL, outputFileName);
+            System.out.println(" Stage 6|    Summary file received in the Local AWS App \n");
+            System.out.println("             HTML file representing the results has been created on : " + outputFilePath + "\n");
+
+
 //            /** 7. Send a terminate message to the manager if it received terminate as one of the input arguments*/
 //            if (terminate) {
 //                endManager(myAWS, managerID, 2500);
@@ -221,24 +226,28 @@ public class LocalApp {
      * @param key UUID key associate with this instance of Local application (global LocalAppId)
      * @param sleep the amount of time in ms between searching for answer in the SQS
      */
-    private static void waitForAnswer(mAWS aws, String key, int sleep) {
+    private static String waitForAnswer(mAWS aws, String key, int sleep) {
         List<Message> messages;
+        String resultURL = null;
         String queueUrl = aws.initSQSqueues(Header.OUTPUT_QUEUE_NAME, "0");
-        System.out.println("LocalApp waiting for response from " + Header.OUTPUT_QUEUE_NAME);
+        System.out.println("             LocalApp waiting for response from the following queue :" + Header.OUTPUT_QUEUE_NAME + "\n");
 
         while(true) {
             messages = aws.receiveSQSmessage(queueUrl); // Receive List of all messages in queue
             for (Message message : messages) {
-                if(message.getBody().equals(key)) {
+                String[] msg = message.getBody().split(" ");
+                if(msg[0].equals(key)) {
                     String myMessage = message.getReceiptHandle();
+                    resultURL = msg[1];
                     aws.deleteSQSmessage(Header.OUTPUT_QUEUE_NAME, myMessage); // Delete the message from the queue
-                    return;
+                    return resultURL;
                 }
             }
             // busy-wait
             try {Thread.sleep(sleep);}
             catch (InterruptedException e){
                 e.printStackTrace();
+                return resultURL;
             }
         }
     }
@@ -250,16 +259,32 @@ public class LocalApp {
      * @return result - a list of lines(String) from the format:
      *                  '<operation>: input file output file'
      */
-    private static String downloadResult(mAWS aws, String outputFileName) {
-        S3Object resultFile = aws.mDownloadS3file(Header.APP_BUCKET_NAME + shortLocalAppID, Header.RESULT_FILE_NAME);
-        InputStream inputStream  = resultFile.getObjectContent();
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+    private static String downloadResult(mAWS aws, String resultsURL, String outputFileName) {
         String outputFilePath = null;
-        String line;
-
         try {
+            URI fileToBeDownloaded = new URI(resultsURL);
+            AmazonS3URI s3URI = new AmazonS3URI(fileToBeDownloaded);
+            S3Object resultFile = aws.mDownloadS3file(s3URI.getBucket(), s3URI.getKey());
+            InputStream inputStream  = resultFile.getObjectContent();
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            String line;
+
             PrintWriter out = new PrintWriter(outputFileName + ".HTML", "UTF-8");
-            out.println("<html>\n<body>");
+            out.println("<html>\n");
+            out.println("<pre style=\"float: top;\" contenteditable=\"false\">_____/\\\\\\\\\\\\\\\\\\______/\\\\\\______________/\\\\\\______/\\\\\\\\\\\\\\\\\\\\\\___\n" +
+                    " ___/\\\\\\\\\\\\\\\\\\\\\\\\\\___\\/\\\\\\_____________\\/\\\\\\____/\\\\\\/////////\\\\\\_\n" +
+                    "  __/\\\\\\/////////\\\\\\__\\/\\\\\\_____________\\/\\\\\\___\\//\\\\\\______\\///__\n" +
+                    "   _\\/\\\\\\_______\\/\\\\\\__\\//\\\\\\____/\\\\\\____/\\\\\\_____\\////\\\\\\_________\n" +
+                    "    _\\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\___\\//\\\\\\__/\\\\\\\\\\__/\\\\\\_________\\////\\\\\\______\n" +
+                    "     _\\/\\\\\\/////////\\\\\\____\\//\\\\\\/\\\\\\/\\\\\\/\\\\\\_____________\\////\\\\\\___\n" +
+                    "      _\\/\\\\\\_______\\/\\\\\\_____\\//\\\\\\\\\\\\//\\\\\\\\\\_______/\\\\\\______\\//\\\\\\__\n" +
+                    "       _\\/\\\\\\_______\\/\\\\\\______\\//\\\\\\__\\//\\\\\\_______\\///\\\\\\\\\\\\\\\\\\\\\\/___\n" +
+                    "        _\\///________\\///________\\///____\\///__________\\///////////_____\n" +
+                    "</pre>");
+            out.println("    <h2>Distriduted System Programming : PDF Document Conversion in the Cloud</h2>\n" +
+                    "    <h3>By Maor Assayag & Refahel Shetrit</h3>\n" +
+                    "    <h3>Results of LocalApp ID : " + LocalAppID + "</h3> <br>");
+            out.println("<body>");
 
             while ((line = bufferedReader.readLine()) != null)
                 out.println(line + "<br>");
@@ -273,7 +298,7 @@ public class LocalApp {
             ex.printStackTrace();
         }
 
-        aws.mDeleteS3file(Header.APP_BUCKET_NAME + shortLocalAppID, Header.RESULT_FILE_NAME);
+        //aws.mDeleteS3file(Header.APP_BUCKET_NAME + shortLocalAppID, Header.RESULT_FILE_NAME);
         return outputFilePath;
     }
 

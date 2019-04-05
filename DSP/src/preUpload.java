@@ -23,7 +23,7 @@ public class preUpload {
         System.out.println(" By Maor Assayag & Refahel Shetrit \n");
         System.out.println(" Stage 1|    Pre-upload of scripts & jars has been started\n");
 
-        mAWS myAWS= new mAWS();
+        mAWS myAWS= new mAWS(true);
         myAWS.initAWSservices();
         upload(myAWS);
         delete(myAWS);

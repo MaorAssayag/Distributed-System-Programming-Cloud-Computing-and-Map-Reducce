@@ -19,7 +19,7 @@ public class Header {
     static final String PRE_UPLOAD_BUCKET_NAME = "mr-dsp-192-pre-upload-jars-scripts";
 
     // General Bucket for new localApps
-    static final String APP_BUCKET_NAME = "mr-dsp-192-local-app-";
+    static final String APP_BUCKET_NAME = "dsp-192-local-app-";
 
     // Folders
     static final String INPUT_FOLDER_NAME = "input-folder";

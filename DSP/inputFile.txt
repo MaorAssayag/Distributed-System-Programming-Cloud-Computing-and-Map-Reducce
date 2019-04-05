@@ -1,4 +1,6 @@
-This is a test for result
-Just a file to upload to S3 storage
-try 2
-try 3
+ToImage	http://www.kidswithfoodallergies.org/KFA-Celebrates-Passover.pdf
+ToImage	http://www.kidswithfoodallergies.org/KFA-Celebrates-Passover.pdf
+ToImage	http://www.kidswithfoodallergies.org/KFA-Celebrates-Passover.pdf
+ToImage	http://www.fairwaymarket.com/wp-content/uploads/2013/09/Kosher-Passover-Menu_FINAL.pdf
+ToHTML:	http://www.bnaitikvah.net/prayer_ritual/documents/PassoverGuidelines.pdf
+ToHTML:	http://www.bnaitikvah.net/prayer_ritual/documents/PassoverGuidelines.pdf

@@ -1,8 +1,6 @@
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.AmazonS3URI;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.sqs.model.Message;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -11,6 +9,7 @@ import org.apache.pdfbox.util.PDFText2HTML;
 import org.apache.pdfbox.util.PDFTextStripper;
 
 import java.io.*;
+import java.net.URI;
 import java.net.URL;
 import java.util.*;
 
@@ -29,32 +28,23 @@ import java.util.*;
  */
 public class ManagerApp {
 
-    private static HashMap<String, String> myAWSqueuesURL;
+    private static HashMap<String, String> myAWSsqsURL;
 
     public static void main(String[] args) throws IOException {
 
+        System.out.println(" Stage 1|    Manager App has been started on EC2 instance\n");
         mAWS myAWS = new mAWS(false);
         myAWS.initAWSservices();
 
-        // ------------------------------ just to make sure the run begin
-        AmazonS3 s3 = AmazonS3ClientBuilder.standard()
-                .withRegion(Regions.US_EAST_1)
-                .build();
-
-        String bucketName = "bucketbymanager";
         try {
-            System.out.println("!!!!!!!!!!!!!!!!!!!! Creating bucket " + bucketName + "\n");
-            s3.createBucket(bucketName);
-
-            // ----------------------------------
             List<Message> messages;
             String[] parsedMessage;
             String resultURL;
             initializeAllQueues(myAWS);
-            System.out.println("Manager start listening to " + Header.OUTPUT_QUEUE_NAME);
+            System.out.println(" Stage 2|    Start listening to the following queue : " + Header.OUTPUT_QUEUE_NAME + "\n");
 
             while(true) {
-                messages = myAWS.receiveSQSmessage(myAWSqueuesURL.get(Header.INPUT_QUEUE_NAME)); // Receive List of all messages in queue
+                messages = myAWS.receiveSQSmessage(myAWSsqsURL.get(Header.INPUT_QUEUE_NAME)); // Receive List of all messages in queue
                 for (Message message : messages) {
                     /**
                      * msg = LocalAppID + " " + terminate + " " + n + " " + uploadedFileURL
@@ -64,18 +54,26 @@ public class ManagerApp {
                      * parsedMessage[3] = uploadedFileURL - input file URL in S3
                      */
                     parsedMessage = message.getBody().split(" ");
+                    System.out.println(" Stage 3|    Parsing the following message : \n");
+                    System.out.println("             " + message.getBody() + "\n");
+
+                    System.out.println(" Stage 4|    Analyzing the following input file : " + parsedMessage[3] + "\n");
                     resultURL = analyzeTextFile(myAWS, parsedMessage[0].substring(0,12), parsedMessage[3]);
-                    myAWS.sendSQSmessage(myAWSqueuesURL.get(Header.OUTPUT_QUEUE_NAME), parsedMessage[0].substring(0,12) + " " + resultURL);
+
+                    System.out.println("\n Stage 5|    Computing complete, Sending the following message to the output queue : \n");
+                    System.out.println("               " + parsedMessage[0].substring(0,12) + " " + resultURL + "\n");
+                    myAWS.sendSQSmessage(myAWSsqsURL.get(Header.OUTPUT_QUEUE_NAME), parsedMessage[0].substring(0,12) + " " + resultURL);
                     //TODO add printing all over the place
                     //TODO : check locally and in S3 for every file that everything is been ok
                     //TODO : generate jar files, dont forget to change credintials boolean
                     //TODO : check on cloud manager if the localAPP got response and ended
                     //TODO : workers?
                     String myMessage = message.getReceiptHandle();
-                    myAWS.deleteSQSmessage(myAWSqueuesURL.get(Header.INPUT_QUEUE_NAME), myMessage); // Delete the message from the queue
+                    myAWS.deleteSQSmessage(myAWSsqsURL.get(Header.INPUT_QUEUE_NAME), myMessage); // Delete the message from the queue
+                    System.out.println(" Stage 6|    Busy-wait to new messages..." + "\n");
                 }
                 // busy-wait
-                try {Thread.sleep(50);}
+                try {Thread.sleep(2000);}
                 catch (InterruptedException e){
                     e.printStackTrace();
                 }
@@ -99,15 +97,12 @@ public class ManagerApp {
         }
     }
 
-
-
     private static void initializeAllQueues(mAWS myAWS) {
         ArrayList<Map.Entry<String, String>> queues = new ArrayList<Map.Entry<String,String>>();
         queues.add(new AbstractMap.SimpleEntry<String, String>(Header.INPUT_QUEUE_NAME, "0"));
         queues.add(new AbstractMap.SimpleEntry<String, String>(Header.OUTPUT_QUEUE_NAME, "0"));
-        myAWSqueuesURL = myAWS.initSQSqueues(queues);
+        myAWSsqsURL = myAWS.initSQSqueues(queues);
     }
-
 
     public static String analyzeTextFile(mAWS myAWS, String shortLocalAppID, String inputFileURL){
         String outputURL = null;
@@ -115,20 +110,29 @@ public class ManagerApp {
                 .getLogger("org.apache.pdfbox").setLevel(java.util.logging.Level.SEVERE);
 
         try {
-            URL inputFileUrlObject = new URL(inputFileURL);
-            Scanner s = new Scanner(inputFileUrlObject.openStream());
+            URI fileToBeDownloaded = new URI(inputFileURL);
+            AmazonS3URI s3URI = new AmazonS3URI(fileToBeDownloaded);
+            S3Object inputFile = myAWS.mDownloadS3file(s3URI.getBucket(), s3URI.getKey());
+
+            InputStream inputStream  = inputFile.getObjectContent();
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+
+            //URL inputFileUrlObject = new URL(inputFileURL);
+            //Scanner s = new Scanner(inputFileUrlObject.openStream());
 
             // Create new file
-            File file = new File(Header.RESULT_FILE_NAME + ".txt");
+            File file = new File(Header.RESULT_FILE_NAME);
             file.createNewFile();
-
+            System.out.println("             Fetching files & computing : ");
             try {
                 PrintWriter out = new PrintWriter(file, "UTF-8");
                 String inputLine;
                 String outputLine;
                 int index = 0;
-                while (s.hasNext()) {
-                    inputLine = s.nextLine();
+                while ((inputLine = bufferedReader.readLine()) != null){
+                    System.out.print(".");
+                    //while (s.hasNext()) {
+                   // inputLine = s.nextLine();
 
                     // Extract operation & URL
                     String[] parts = inputLine.split("\t"); // String array, each element is text between a tab
@@ -146,7 +150,7 @@ public class ManagerApp {
 
                     index++;
                 }
-                s.close();
+                bufferedReader.close();
                 //outputURL = file.getAbsolutePath();
                 out.close();
 
@@ -164,13 +168,11 @@ public class ManagerApp {
     }
 
     public static String convertPDF(mAWS myAWS, String shortLocalAppID, String operation, String pdfURL, int index) {
-        String outputLine = operation + ":" + " " + pdfURL + " ";
+        String outputLine = operation + ":" + "\t" + pdfURL + " ";
         try {
             // Load PDF from URL
-            //PDDocument pddDocument = PDDocument.load(new URL(pdfURL));
             PDDocument pddDocument = PDDocument.load(new URL(pdfURL));
             if (!pddDocument.isEncrypted()) {
-                //TODO : save the files in EC2 and get the URL from it
                 if (operation.equals("ToText")){
                     //ToText - convert the first page of the PDF file to a text file.
                     PDFTextStripper textStripper = new PDFTextStripper();
@@ -183,26 +185,23 @@ public class ManagerApp {
                     // Create new file
                     File file = new File("temp" + ".txt");
                     file.createNewFile();
-                    try {
-                        PrintWriter out = new PrintWriter(file, "UTF-8");
-                        out.println(firstPage);
-                        //TODO change to EC2 url
-                        String newURL = myAWS.mUploadS3(Header.APP_BUCKET_NAME+shortLocalAppID, Header.OUTPUT_FOLDER_NAME, index+".txt", file);
-                        //outputLine = outputLine + file.getAbsolutePath();
-                        outputLine = outputLine + newURL;
-                        out.close();
-                    }catch (Exception e){
-                        e.printStackTrace();
-                        outputLine = outputLine + e.getMessage();
-                    }
+                    PrintWriter out = new PrintWriter(file, "UTF-8");
+                    out.println(firstPage);
+
+                    // Upload to EC2
+                    String newURL = myAWS.mUploadS3(Header.APP_BUCKET_NAME+shortLocalAppID, Header.OUTPUT_FOLDER_NAME, index+".txt", file);
+                    outputLine = outputLine + newURL;
+                    out.close();
 
                 } else if (operation.equals("ToImage")){
                     //ToImage - convert the first page of the PDF file to a "png" image.
                     PDFImageWriter writer = new PDFImageWriter();
                     writer.writeImage(pddDocument, Header.IMAGE_FORMAT, null,1,1, Header.IMAGE_NAME);
-                    //TODO change to EC2 url
                     //outputLine = outputLine + new java.io.File( "." ).getCanonicalPath() + File.separator + Header.IMAGE_NAME+index+"."+IMAGE_FORMAT;
-                    File file = new File(new java.io.File( "." ).getCanonicalPath() + File.separator + Header.IMAGE_NAME+"."+Header.IMAGE_FORMAT);
+
+                    // Upload to EC2
+                    // PDFImageWrite write the png to temp1.png constantly
+                    File file = new File(new java.io.File( "." ).getCanonicalPath() + File.separator + Header.IMAGE_NAME+1+"."+Header.IMAGE_FORMAT);
                     String newURL = myAWS.mUploadS3(Header.APP_BUCKET_NAME+shortLocalAppID, Header.OUTPUT_FOLDER_NAME, index+"."+Header.IMAGE_FORMAT, file);
                     outputLine = outputLine + newURL;
 
@@ -214,34 +213,34 @@ public class ManagerApp {
                     FileWriter fWriter = null;
                     BufferedWriter bufferedWriter = null;
 
-                    try {
-                        fWriter = new FileWriter(Header.HTML_NAME + ".html");
-                        bufferedWriter = new BufferedWriter(fWriter);
-                        pdfText2HTML.writeText(pddDocument,bufferedWriter);
-                        bufferedWriter.close();
-                        //TODO change to EC2 url
-                        //outputLine = outputLine + new java.io.File( "." ).getCanonicalPath() + File.separator + HTML_NAME + ".html";
-                        File file = new File(new java.io.File( "." ).getCanonicalPath() + File.separator + Header.HTML_NAME+".html");
-                        String newURL = myAWS.mUploadS3(Header.APP_BUCKET_NAME+shortLocalAppID, Header.OUTPUT_FOLDER_NAME, index+".html", file);
-                        outputLine = outputLine + newURL;
+                    // Create new file
+                    fWriter = new FileWriter(Header.HTML_NAME + ".html");
+                    bufferedWriter = new BufferedWriter(fWriter);
+                    pdfText2HTML.writeText(pddDocument,bufferedWriter);
+                    bufferedWriter.close();
 
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        outputLine = outputLine + e.getMessage();
-                    }
+                    // Upload to EC2
+                    //outputLine = outputLine + new java.io.File( "." ).getCanonicalPath() + File.separator + HTML_NAME + ".html";
+                    File file = new File(new java.io.File( "." ).getCanonicalPath() + File.separator + Header.HTML_NAME+".html");
+                    String newURL = myAWS.mUploadS3(Header.APP_BUCKET_NAME+shortLocalAppID, Header.OUTPUT_FOLDER_NAME, index+".html", file);
+                    outputLine = outputLine + newURL;
 
                 }else{
-                    outputLine = outputLine + "Unsupported operation: " + operation;
-
+                    outputLine = outputLine + "Error: Unsupported operation: " + operation;
                 }
             }else{
-                outputLine = outputLine + "File is Encrypted";
+                outputLine = outputLine + "Error: File is Encrypted";
             }
-
             pddDocument.close();
         } catch (Exception e) {
             //e.printStackTrace();
-            outputLine = outputLine + e.getMessage();
+            try{
+                //outputLine = outputLine + "Error:" + e.getCause().getMessage();
+                outputLine = outputLine + "Error: PDF file not found - " + e.getClass().getName();
+            } catch (Exception ex){
+                //outputLine = outputLine + "Error:" + e.getMessage();
+                outputLine = outputLine + "Error: PDF file not found";
+            }
         }
         return outputLine;
     }

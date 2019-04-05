@@ -166,7 +166,7 @@ public class mAWS {
                     instancesId.add(instanceID);
                 }
             } catch (Exception e) {
-                System.out.println("Error Message on initEC2instance instances tag request : " + e.getMessage());
+                System.out.println("             Error Message on initEC2instance instances tag request : " + e.getMessage());
             }
         }
         return instancesId;
@@ -354,7 +354,7 @@ public class mAWS {
                     attributes.put("VisibilityTimeout", pair.getValue());
                     createQueueRequest.setAttributes(attributes);
                     queueURL = mSQS.createQueue(createQueueRequest).getQueueUrl();
-                    System.out.println("QUEUE CREATED: " + queueURL);
+                    System.out.println("             The following queue has been created : " + queueURL + "\n");
                 }
                 else {
                     System.out.println("Caught Exception: " + exception.getMessage());
