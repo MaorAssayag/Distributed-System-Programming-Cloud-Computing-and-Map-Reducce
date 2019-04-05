@@ -39,35 +39,35 @@ public class preUpload {
     }
 
     private static void upload(mAWS myAWS) {
-        uploadScripts(myAWS);
-        uploadJars(myAWS);
+        //uploadScripts(myAWS);
+        //uploadJars(myAWS);
     }
 
-    private static void uploadScripts(mAWS awsO) {
-        File managerScriptFile = new File("C:\\Users\\MaorA\\IdeaProjects\\DSP\\src\\scriptManager.txt");
-        String path = awsO.mUploadS3(Header.APP_BUCKET_NAME, Header.MANAGER_SCRIPT, managerScriptFile);
-        System.out.println(" Stage 2|    Manager script has been uploaded to " + path + "\n");
+//    private static void uploadScripts(mAWS awsO) {
+//        File managerScriptFile = new File("C:\\Users\\MaorA\\IdeaProjects\\DSP\\src\\scriptManager.txt");
+//        String path = awsO.mUploadS3(Header.APP_BUCKET_NAME, Header.PRE_FOLDER_NAME, Header.MANAGER_SCRIPT, managerScriptFile);
+//        System.out.println(" Stage 2|    Manager script has been uploaded to " + path + "\n");
+//
+////        File workerScriptFile = new File("scriptWorker.txt");
+////        awsO.mUploadS3(Header.APP_BUCKET_NAME, Header.WORKER_SCRIPT, workerScriptFile);
+////        System.out.println("Worker Script Uploaded");
+//    }
 
-//        File workerScriptFile = new File("scriptWorker.txt");
-//        awsO.mUploadS3(Header.APP_BUCKET_NAME, Header.WORKER_SCRIPT, workerScriptFile);
-//        System.out.println("Worker Script Uploaded");
-    }
-
-    private static void uploadJars(mAWS myAWS) {
-//        File localFile = new File("localapp.jar");
-//        myAWS.mUploadS3(Header.APP_BUCKET_NAME, "localapp.jar", localFile);
-//        System.out.println("LocalApplication Jar Uploaded");
-
-        File managerFile = new File("C:\\Users\\MaorA\\IdeaProjects\\DSP\\out\\artifacts\\ManagerApp_jar\\ManagerApp.jar");
-        String path = myAWS.mUploadS3(Header.APP_BUCKET_NAME, "ManagerApp.jar", managerFile);
-        System.out.println(" Stage 3|    Manager jar has been uploaded to " + path + "\n");
-
-//        File workerFile = new File("workerapp.jar");
-//        myAWS.mUploadS3(Header.APP_BUCKET_NAME, "workerapp.jar", workerFile);
-//        System.out.println("Worker Jar Uploaded");
-
-        System.out.println("             Please make sure that public Bucket permission has been enabled on S3 aws console\n");
-    }
+//    private static void uploadJars(mAWS myAWS) {
+////        File localFile = new File("localapp.jar");
+////        myAWS.mUploadS3(Header.APP_BUCKET_NAME, "localapp.jar", localFile);
+////        System.out.println("LocalApplication Jar Uploaded");
+//
+//        File managerFile = new File("C:\\Users\\MaorA\\IdeaProjects\\DSP\\out\\artifacts\\ManagerApp_jar\\ManagerApp.jar");
+//        String path = myAWS.mUploadS3(Header.APP_BUCKET_NAME, Header.PRE_FOLDER_NAME,"ManagerApp.jar", managerFile);
+//        System.out.println(" Stage 3|    Manager jar has been uploaded to " + path + "\n");
+//
+////        File workerFile = new File("workerapp.jar");
+////        myAWS.mUploadS3(Header.APP_BUCKET_NAME, "workerapp.jar", workerFile);
+////        System.out.println("Worker Jar Uploaded");
+//
+//        System.out.println("             Please make sure that public Bucket permission has been enabled on S3 aws console\n");
+//    }
 
     private static void delete(mAWS awsO) {
         //deleteS3Buckets(awsO);
@@ -84,19 +84,19 @@ public class preUpload {
     }
 
     private static void deleteS3Buckets(mAWS awsO) {
-        try {
-            awsO.mDeleteS3bucket(Header.INPUT_BUCKET_NAME);
-            System.out.println("Input bucket deleted");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        try{
-            awsO.mDeleteS3bucketFiles(Header.OUTPUT_BUCKET_NAME);
-            System.out.println("Output bucket deleted");
-        } catch (Exception e){
-            e.printStackTrace();
-        }
+//        try {
+//            awsO.mDeleteS3bucket(Header.INPUT_BUCKET_NAME);
+//            System.out.println("Input bucket deleted");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        try{
+//            awsO.mDeleteS3bucketFiles(Header.OUTPUT_BUCKET_NAME);
+//            System.out.println("Output bucket deleted");
+//        } catch (Exception e){
+//            e.printStackTrace();
+//        }
     }
 
     private static String getScript(String userData) {
@@ -113,7 +113,7 @@ public class preUpload {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     stringBuilder.append(line);
-                    stringBuilder.append(System.lineSeparator());
+                    stringBuilder.append("\n");
                 }
                 script = stringBuilder.toString();
                 reader.close();

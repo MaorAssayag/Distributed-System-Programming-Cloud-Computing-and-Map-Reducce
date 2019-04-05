@@ -58,15 +58,15 @@ public class convertPDF {
         // Promotion
         System.out.println("**************************************************************** \n");
         System.out.println(
-                "_____/\\\\\\\\\\\\\\\\\\______/\\\\\\______________/\\\\\\______/\\\\\\\\\\\\\\\\\\\\\\___        \n" +
-                " ___/\\\\\\\\\\\\\\\\\\\\\\\\\\___\\/\\\\\\_____________\\/\\\\\\____/\\\\\\/////////\\\\\\_       \n" +
-                "  __/\\\\\\/////////\\\\\\__\\/\\\\\\_____________\\/\\\\\\___\\//\\\\\\______\\///__      \n" +
-                "   _\\/\\\\\\_______\\/\\\\\\__\\//\\\\\\____/\\\\\\____/\\\\\\_____\\////\\\\\\_________     \n" +
-                "    _\\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\___\\//\\\\\\__/\\\\\\\\\\__/\\\\\\_________\\////\\\\\\______    \n" +
-                "     _\\/\\\\\\/////////\\\\\\____\\//\\\\\\/\\\\\\/\\\\\\/\\\\\\_____________\\////\\\\\\___   \n" +
-                "      _\\/\\\\\\_______\\/\\\\\\_____\\//\\\\\\\\\\\\//\\\\\\\\\\_______/\\\\\\______\\//\\\\\\__  \n" +
-                "       _\\/\\\\\\_______\\/\\\\\\______\\//\\\\\\__\\//\\\\\\_______\\///\\\\\\\\\\\\\\\\\\\\\\/___ \n" +
-                "        _\\///________\\///________\\///____\\///__________\\///////////_____\n");
+                "_____/\\\\\\\\\\\\\\\\\\______/\\\\\\______________/\\\\\\_____/\\\\\\\\\\\\\\\\\\\\\\___        \n" +
+                " ___/\\\\\\\\\\\\\\\\\\\\\\\\\\___\\/\\\\\\_____________\\/\\\\\\___/\\\\\\/////////\\\\\\_       \n" +
+                "  __/\\\\\\/////////\\\\\\__\\/\\\\\\_____________\\/\\\\\\__\\//\\\\\\______\\///__      \n" +
+                "   _\\/\\\\\\_______\\/\\\\\\__\\//\\\\\\____/\\\\\\____/\\\\\\____\\////\\\\\\_________     \n" +
+                "    _\\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\___\\//\\\\\\__/\\\\\\\\\\__/\\\\\\________\\////\\\\\\______    \n" +
+                "     _\\/\\\\\\/////////\\\\\\____\\//\\\\\\/\\\\\\/\\\\\\/\\\\\\____________\\////\\\\\\___   \n" +
+                "      _\\/\\\\\\_______\\/\\\\\\_____\\//\\\\\\\\\\\\//\\\\\\\\\\______/\\\\\\______\\//\\\\\\__  \n" +
+                "       _\\/\\\\\\_______\\/\\\\\\______\\//\\\\\\__\\//\\\\\\______\\///\\\\\\\\\\\\\\\\\\\\\\/___ \n" +
+                "        _\\///________\\///________\\///____\\///_________\\///////////_____\n");
         System.out.println(" Distriduted System Programming : PDF Document Conversion in the Cloud");
         System.out.println(" By Maor Assayag & Refahel Shetrit \n");
         System.out.println(" Stage 1|    Local AWS App has been started \n");
@@ -80,20 +80,41 @@ public class convertPDF {
         String managerID;
         try {
             /**2. Start a Manager instance on EC2 (if its not already running) */
-            managerID = checkManager(myAWS);
+            String[] results = checkManager(myAWS);
+            managerID = results[0];
             if (managerID != null) {
-                // Promotion
+                // Promotion of running Manager
                 System.out.println(" Stage 2|    Manager instance already running, Manager ID : " + managerID + "\n");
             } else {
-                managerID = startManager(myAWS);
-                // Promotion
-                System.out.println(" Stage 2|    Manager instance has been started, Manager ID : " + managerID + "\n");
+                managerID = results[1];
+                Boolean restartResult = false;
+                if (managerID !=null)
+                    restartResult = myAWS.restartEC2instance(managerID);
+                if (restartResult){
+                    // Promotion of rebooted Manager
+                    System.out.println(" Stage 2|    Manager instance has been rebooted, Manager ID : " + managerID + "\n");
+                } else{
+                    managerID = startManager(myAWS);
+                    // Promotion of new Manager
+                    System.out.println(" Stage 2|    Manager instance has been started, Manager ID : " + managerID + "\n");
+                }
             }
 
 
+            /** 3. Upload the input file to S3 bucket APP_BUCKET_NAME in folder FILES_FOLDER_NAME*/
+            //myAWS.mCreateFolderS3(Header.APP_BUCKET_NAME + LocalAppID, Header.INPUT_FOLDER_NAME);
+            String uploadedFileURL = uploadFileToS3(myAWS, inputFileName, Header.INPUT_FOLDER_NAME);
+            System.out.println(" Stage 3|    The input file has been uploaded to " + uploadedFileURL + "\n");
 
 
-
+            /** 4. Send the uploaded file URL to the SQS queue*/
+            myAWS.initSQS();
+            send2SQS(myAWS, LocalAppID + " " + terminate + " " + n + " " + uploadedFileURL);
+            if (terminate){
+                System.out.println(" Stage 4|    Terminate message has been sent to the SQS queue \n");
+            }else{
+                System.out.println(" Stage 4|    The file URL has been sent to the SQS queue \n");
+            }
 
             System.out.println(" _______________   __________ \n" +
                     " ___  ____/___  | / /___  __ \\\n" +
@@ -127,75 +148,71 @@ public class convertPDF {
 
     public static String convertPDF(String operation, String pdfURL) {
         String outputLine = operation + ":" + " " + pdfURL + " ";
-        try (PDDocument pddDocument = PDDocument.load(new URL(pdfURL))){
+        try {
             // Load PDF from URL
             //PDDocument pddDocument = PDDocument.load(new URL(pdfURL));
-
+            PDDocument pddDocument = PDDocument.load(new URL(pdfURL));
             if (!pddDocument.isEncrypted()) {
                 //TODO : save the files in EC2 and get the URL from it
-                switch(operation) {
-                    case "ToText":
+                if (operation.equals("ToText")){
+                    //ToText - convert the first page of the PDF file to a text file.
+                    PDFTextStripper textStripper = new PDFTextStripper();
 
-                        //ToText - convert the first page of the PDF file to a text file.
-                        PDFTextStripper textStripper = new PDFTextStripper();
+                    // Extract the first page of the PDF
+                    textStripper.setStartPage(1);
+                    textStripper.setEndPage(1);
+                    String firstPage = textStripper.getText(pddDocument);
 
-                        // Extract the first page of the PDF
-                        textStripper.setStartPage(1);
-                        textStripper.setEndPage(1);
-                        String firstPage = textStripper.getText(pddDocument);
-
-                        // Create new file
-                        File file = new File(TEXT_NAME + ".txt");
-                        file.createNewFile();
-                        try (PrintWriter out = new PrintWriter(file, "UTF-8")) {
-                            out.println(firstPage);
-                            //TODO change to EC2 url
-                            outputLine = outputLine + file.getAbsolutePath();
-                        }catch (Exception e){
-                            e.printStackTrace();
-                            outputLine = outputLine + e.getMessage();
-                        }
-                        break;
-
-                    case "ToImage":
-
-                        //ToImage - convert the first page of the PDF file to a "png" image.
-                        PDFImageWriter writer = new PDFImageWriter();
-                        writer.writeImage(pddDocument, IMAGE_FORMAT, null,1,1, IMAGE_NAME);
+                    // Create new file
+                    File file = new File(TEXT_NAME + ".txt");
+                    file.createNewFile();
+                    try {
+                        PrintWriter out = new PrintWriter(file, "UTF-8");
+                        out.println(firstPage);
                         //TODO change to EC2 url
-                        outputLine = outputLine + new java.io.File( "." ).getCanonicalPath() + File.separator + IMAGE_NAME+1+"."+IMAGE_FORMAT;
-                        break;
+                        outputLine = outputLine + file.getAbsolutePath();
+                        out.close();
+                    }catch (Exception e){
+                        e.printStackTrace();
+                        outputLine = outputLine + e.getMessage();
+                    }
 
-                    case "ToHTML":
+                } else if (operation.equals("ToImage")){
+                    //ToImage - convert the first page of the PDF file to a "png" image.
+                    PDFImageWriter writer = new PDFImageWriter();
+                    writer.writeImage(pddDocument, IMAGE_FORMAT, null,1,1, IMAGE_NAME);
+                    //TODO change to EC2 url
+                    outputLine = outputLine + new java.io.File( "." ).getCanonicalPath() + File.separator + IMAGE_NAME+1+"."+IMAGE_FORMAT;
 
-                        //ToHTML - convert the first page of the PDF file to an HTML file.
-                        PDFText2HTML pdfText2HTML = new PDFText2HTML(ENCODING);
-                        pdfText2HTML.setStartPage(1);
-                        pdfText2HTML.setEndPage(1);
-                        FileWriter fWriter = null;
-                        BufferedWriter bufferedWriter = null;
+                }else if (operation.equals("ToHTML")){
+                    //ToHTML - convert the first page of the PDF file to an HTML file.
+                    PDFText2HTML pdfText2HTML = new PDFText2HTML(ENCODING);
+                    pdfText2HTML.setStartPage(1);
+                    pdfText2HTML.setEndPage(1);
+                    FileWriter fWriter = null;
+                    BufferedWriter bufferedWriter = null;
 
-                        try {
-                            fWriter = new FileWriter(HTML_NAME + ".html");
-                            bufferedWriter = new BufferedWriter(fWriter);
-                            pdfText2HTML.writeText(pddDocument,bufferedWriter);
-                            bufferedWriter.close();
-                            //TODO change to EC2 url
-                            outputLine = outputLine + new java.io.File( "." ).getCanonicalPath() + File.separator + HTML_NAME + ".html";
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            outputLine = outputLine + e.getMessage();
-                        }
-                        break;
+                    try {
+                        fWriter = new FileWriter(HTML_NAME + ".html");
+                        bufferedWriter = new BufferedWriter(fWriter);
+                        pdfText2HTML.writeText(pddDocument,bufferedWriter);
+                        bufferedWriter.close();
+                        //TODO change to EC2 url
+                        outputLine = outputLine + new java.io.File( "." ).getCanonicalPath() + File.separator + HTML_NAME + ".html";
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        outputLine = outputLine + e.getMessage();
+                    }
 
-                    default:
-                        outputLine = outputLine + "Unsupported operation: " + operation;
+                }else{
+                    outputLine = outputLine + "Unsupported operation: " + operation;
+
                 }
-
             }else{
                 outputLine = outputLine + "File is Encrypted";
             }
 
+            pddDocument.close();
         } catch (Exception e) {
             //e.printStackTrace();
             outputLine = outputLine + e.getMessage();
@@ -216,7 +233,8 @@ public class convertPDF {
             File file = new File(RESULT_NAME + ".txt");
             file.createNewFile();
 
-            try (PrintWriter out = new PrintWriter(file, "UTF-8")) {
+            try {
+                PrintWriter out = new PrintWriter(file, "UTF-8");
                 String inputLine;
                 String outputLine;
                 while (s.hasNext()) {
@@ -238,6 +256,7 @@ public class convertPDF {
                 }
                 s.close();
                 outputURL = file.getAbsolutePath();
+                out.close();
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -248,7 +267,8 @@ public class convertPDF {
     }
 
     public static void testText2HTML(String outputFileName){
-        try(PrintWriter out = new PrintWriter(outputFileName + ".HTML", "UTF-8")){
+        try{
+            PrintWriter out = new PrintWriter(outputFileName + ".HTML", "UTF-8");
             FileReader fileReader = new FileReader("C:\\Users\\MaorA\\IdeaProjects\\DSP\\pdf.txt");
             BufferedReader bufferedReader = new BufferedReader(fileReader);
 
@@ -262,6 +282,7 @@ public class convertPDF {
             bufferedReader.close();
 
             out.println("</body>\n</html>");
+            out.close();
             String outputFilePath = new java.io.File(".").getCanonicalPath() + File.separator + outputFileName + ".html";
             System.out.println(outputFilePath);
             }catch (Exception e){
@@ -273,17 +294,23 @@ public class convertPDF {
     /**
      * ----------------------------------------------------------
      */
+
     /**
      * startManager - method used to start a manager if a manager isn't active
      * Recommended AMI image which supports user-data : ami-51792c38
      * Currently using T2 instances are Burstable Performance Instances that provide
      * a baseline level of CPU performance with the ability to burst above the baseline.
      *
-     * @return the id of a manager instance created
+     * Image ID : ami-0080e4c5bc078760e - Linux 64 bit with full support of java
+     *
+     * @return the id of a manager instance that has been created
      */
-    private static String startManager(mAWS aws) {
-        ArrayList<String> managerInstance = aws.initEC2instance("ami-0080e4c5bc078760e", 1, 1, InstanceType.T2Micro.toString(),
-                Header.MANAGER_SCRIPT, Header.INSTANCE_KEY_NAME, TAG_MANAGER);
+    private static String startManager(mAWS myAWS) {
+        uploadScripts(myAWS);
+        uploadJars(myAWS);
+        ArrayList<String> managerInstance = myAWS.initEC2instance("ami-0080e4c5bc078760e",
+                1, 1, InstanceType.T2Micro.toString(), Header.APP_BUCKET_NAME + LocalAppID,
+                Header.INPUT_FOLDER_NAME + "/" + Header.MANAGER_SCRIPT, Header.INSTANCE_KEY_NAME, TAG_MANAGER);
         return 	managerInstance.get(0);
     }
 
@@ -292,8 +319,11 @@ public class convertPDF {
      * instance in aws.
      * @return instanceID if manager found, else null
      */
-    private static String checkManager(mAWS aws) {
-        return aws.getEC2instanceID(TAG_MANAGER, "running");
+    private static String[] checkManager(mAWS aws) {
+        String[] results = new String[2];
+        results[0] = aws.getEC2instanceID(TAG_MANAGER, "running");
+        results[1] = aws.getEC2instanceID(TAG_MANAGER, "stopped");
+        return results;
     }
 
     /**
@@ -303,8 +333,8 @@ public class convertPDF {
      * @param aws amazon web service object with EC2 & S3
      * @return path (url) of the uploaded file in S3 - a confirmation of successful upload
      */
-    private static String uploadFileToS3(mAWS aws, String inputFileName) {
-        return aws.mUploadS3(Header.INPUT_BUCKET_NAME, LocalAppID, new File(inputFileName));
+    private static String uploadFileToS3(mAWS aws, String inputFileName, String folder) {
+        return aws.mUploadS3(Header.APP_BUCKET_NAME + LocalAppID, folder, LocalAppID, new File(inputFileName));
     }
 
     /**
@@ -313,21 +343,19 @@ public class convertPDF {
      * The method initialize a Queue of messages (if needed) and send a message with the input file's URL and
      * information about the number of workers, LocalAppID etc.
      *
-     * @param aws amazon web service object with EC2 & S3
-     * @param terminate doest we want to send a termination message
-     * @param n number of workers expected
+     * @param myAWS amazon web service object with EC2 & S3
+     * @param msg the message to be sent
      */
-    private static void send2SQS(mAWS aws, int n, boolean terminate) {
-        String queueURL = aws.initSQSqueues(Header.INPUT_QUEUE_NAME, "0");
-        String msg = LocalAppID + Header.MESSAGE_DIFF + terminate + Header.MESSAGE_DIFF + n;
-        aws.sendSQSmessage(queueURL, msg);
+    private static void send2SQS(mAWS myAWS, String msg) {
+        String queueURL = myAWS.initSQSqueues(Header.INPUT_QUEUE_NAME, "0");
+        myAWS.sendSQSmessage(queueURL, msg);
     }
 
     /**
      * waitForAnswer - method thats check the SQS in the cloud until there's a message
      * associate with the LocalAppID (meaning the Manager has responded and finished/stop
      * processing the requested operation)
-     * @implNote Blocking-IO method that sleeps for 'sleep' ms
+     *  Blocking-IO method that sleeps for 'sleep' ms
      * @param aws amazon web service object with EC2 & S3
      * @param key UUID key associate with this instance of Local application (global LocalAppId)
      * @param sleep the amount of time in ms between searching for answer in the SQS
@@ -346,7 +374,7 @@ public class convertPDF {
                     return;
                 }
             }
-            // "busy"-wait
+            // busy-wait
             try {Thread.sleep(sleep);}
             catch (InterruptedException e){
                 e.printStackTrace();
@@ -362,14 +390,14 @@ public class convertPDF {
      *                  '<operation>: input file output file'
      */
     private static String downloadResult(mAWS aws, String outputFileName) {
-        S3Object bucket = aws.mDownloadS3file(Header.OUTPUT_BUCKET_NAME, LocalAppID);
-        InputStream inputStream  = bucket.getObjectContent();
+        S3Object resultFile = aws.mDownloadS3file(Header.APP_BUCKET_NAME + LocalAppID, LocalAppID);
+        InputStream inputStream  = resultFile.getObjectContent();
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
         String outputFilePath = null;
         String line;
 
-        try (PrintWriter out = new PrintWriter(outputFileName + ".HTML", "UTF-8")){
-
+        try {
+            PrintWriter out = new PrintWriter(outputFileName + ".HTML", "UTF-8");
             out.println("<html>\n<body>");
 
             while ((line = bufferedReader.readLine()) != null)
@@ -378,12 +406,13 @@ public class convertPDF {
 
             out.println("</body>\n</html>");
             outputFilePath = new java.io.File(".").getCanonicalPath() + File.separator + outputFileName + ".html";
+            out.close();
 
         } catch (Exception ex){
             ex.printStackTrace();
         }
 
-        aws.mDeleteS3file(Header.OUTPUT_BUCKET_NAME, LocalAppID);
+        aws.mDeleteS3file(Header.APP_BUCKET_NAME + LocalAppID, LocalAppID);
         return outputFilePath;
     }
 
@@ -396,6 +425,30 @@ public class convertPDF {
     private static void endManager(mAWS myAWS, String MangerID, int sleep) {
         waitForAnswer(myAWS, Header.TERMINATED_STRING, sleep);
         myAWS.terminateEC2instance(MangerID);
+    }
+
+    private static void uploadScripts(mAWS myAWS) {
+        File managerScriptFile = new File("C:\\Users\\MaorA\\IdeaProjects\\DSP\\src\\scriptManager.txt");
+        String path = myAWS.mUploadS3(Header.APP_BUCKET_NAME + LocalAppID, Header.INPUT_FOLDER_NAME, Header.MANAGER_SCRIPT, managerScriptFile);
+        System.out.println(" Stage 2|    Manager script has been uploaded to " + path + "\n");
+//        File workerScriptFile = new File("scriptWorker.txt");
+//        myAWS.mUploadS3(Header.APP_BUCKET_NAME, Header.WORKER_SCRIPT, workerScriptFile);
+//        System.out.println("Worker Script Uploaded");
+    }
+
+    private static void uploadJars(mAWS myAWS) {
+//        File localFile = new File("localapp.jar");
+//        myAWS.mUploadS3(Header.APP_BUCKET_NAME, "localapp.jar", localFile);
+//        System.out.println("LocalApplication Jar Uploaded");
+
+        File managerFile = new File("C:\\Users\\MaorA\\IdeaProjects\\DSP\\out\\artifacts\\ManagerApp_jar\\ManagerApp.jar");
+        String path = myAWS.mUploadS3(Header.APP_BUCKET_NAME + LocalAppID, Header.INPUT_FOLDER_NAME,"ManagerApp.jar", managerFile);
+        System.out.println(" Stage 3|    Manager jar has been uploaded to " + path + "\n");
+
+//        File workerFile = new File("workerapp.jar");
+//        myAWS.mUploadS3(Header.APP_BUCKET_NAME, "workerapp.jar", workerFile);
+//        System.out.println("Worker Jar Uploaded");
+        System.out.println("             Please make sure that public Bucket permission has been enabled on S3 aws console\n");
     }
 }
 

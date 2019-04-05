@@ -16,22 +16,37 @@ public class Header {
     static final String INSTANCE_KEY_NAME = "managerInstance";
 
     // Bucket with all the jars and scripts
-    static final String APP_BUCKET_NAME = "app-bucket-dsp-192-maor-refahel";
+    static final String PRE_UPLOAD_BUCKET_NAME = "mr-dsp-192-pre-upload-jars-scripts";
 
-    // Buckets name
-    static final String INPUT_BUCKET_NAME = "input-bucket-dsp-192-maor-refahel";
-    static final String OUTPUT_BUCKET_NAME = "output-bucket-dsp-192-maor-refahel";
+    // General Bucket for new localApps
+    static final String APP_BUCKET_NAME = "mr-dsp-192-local-app-";
+
+    // Folders
+    static final String INPUT_FOLDER_NAME = "input-folder";
+    static final String OUTPUT_FOLDER_NAME = "output-folder";
+
+    // Files
+    static final String INPUT_FILE_NAME = "input-file.txt";
+    static final String RESULT_FILE_NAME = "result-file.txt";
+    static final String IMAGE_FORMAT = "png";
+    static final String IMAGE_NAME = "temp";
+    static final String TEXT_NAME = "temp";
+    static final String HTML_NAME = "tmep";
+    static final String RESULT_NAME = "result";
+    static final String ENCODING = "UTF-8";
 
     // Strings for SQS messages
-    static final String MESSAGE_DIFF = "#s";
     static final String TERMINATED_STRING = "TERMINATED"; //Tells the localApp it can terminate the Manager Instance
 
     // Scripts
     static final String MANAGER_SCRIPT = "scriptManager.txt";
     static final String WORKER_SCRIPT = "scriptWorker.txt";
 
+    // Jars
+    static final String MANAGER_JAR = "ManagerApp.jar";
+    static final String WORKER_JAR = "WorkerApp.jar";
+
     // Queues Names
     static final String INPUT_QUEUE_NAME = "inputQueue";
     static final String OUTPUT_QUEUE_NAME = "outputQueue";
-
 }

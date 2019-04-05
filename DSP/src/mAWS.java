@@ -17,15 +17,10 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
 import com.amazonaws.services.ec2.model.*;
+import com.amazonaws.services.ec2.model.Tag;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.DeleteObjectRequest;
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.ListObjectsRequest;
-import com.amazonaws.services.s3.model.ObjectListing;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.amazonaws.services.s3.model.*;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.amazonaws.services.sqs.model.*;
@@ -50,12 +45,16 @@ public class mAWS {
     private AmazonEC2 mEC2;
     private AmazonS3 mS3;
     private AWSCredentials credentials;
+    private boolean fromLocal;
 
     /**
      * Get your credentials from the "credentials" file inside you .aws folder
      */
-    public mAWS(){
-        credentials = new ProfileCredentialsProvider().getCredentials();
+    public mAWS(boolean fromLocal){
+        this.fromLocal = fromLocal;
+        if(fromLocal){
+            credentials = new ProfileCredentialsProvider().getCredentials();
+        }
     }
 
     /**
@@ -79,10 +78,16 @@ public class mAWS {
      * initialize EC2 service
      */
     public void initEC2(){
-        mEC2 = AmazonEC2ClientBuilder.standard()
-                .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                .withRegion(Regions.US_EAST_1)
-                .build();
+        if (this.fromLocal){
+            mEC2 = AmazonEC2ClientBuilder.standard()
+                    .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                    .withRegion(Regions.US_EAST_1)
+                    .build();
+        }else{
+            mEC2 = AmazonEC2ClientBuilder.standard()
+                    .withRegion(Regions.US_EAST_1)
+                    .build();
+        }
     }
 
     /**
@@ -123,13 +128,13 @@ public class mAWS {
      * @param tag
      * @return list with all the instance's id created
      */
-    public ArrayList<String> initEC2instance(String imageId, Integer minCount, Integer maxCount, String type, String userData, String keyName, Tag tag){
+    public ArrayList<String> initEC2instance(String imageId, Integer minCount, Integer maxCount, String type, String bucketName, String userData, String keyName, Tag tag){
 
-        ArrayList<String> instancesId = new ArrayList<>();
+        ArrayList<String> instancesId = new ArrayList<String>();
         String userScript = null;
 
         try {
-            userScript = getScript(userData);
+            userScript = getScript(bucketName, userData);
 
         } catch (Exception e) {
             //e.printStackTrace();
@@ -145,7 +150,7 @@ public class mAWS {
             request.withUserData(userScript);
 
         List<Instance> instances = mEC2.runInstances(request).getReservation().getInstances();
-        List<Tag> tags = new ArrayList<>();
+        List<Tag> tags = new ArrayList<Tag>();
         tags.add(tag);
         CreateTagsRequest tagsRequest = new CreateTagsRequest();
         tagsRequest.setTags(tags);
@@ -154,15 +159,41 @@ public class mAWS {
         // Create tag request for each instance (if we want to denote 20 workers then we want tags for them)
         for (Instance instance : instances) {
             try {
-                instanceID = instance.getInstanceId();
-                tagsRequest.withResources(instanceID);
-                mEC2.createTags(tagsRequest);
-                instancesId.add(instanceID);
+                if (instance.getState().getName().equals("pending")){
+                    instanceID = instance.getInstanceId();
+                    tagsRequest.withResources(instanceID);
+                    mEC2.createTags(tagsRequest);
+                    instancesId.add(instanceID);
+                }
             } catch (Exception e) {
                 System.out.println("Error Message on initEC2instance instances tag request : " + e.getMessage());
             }
         }
         return instancesId;
+    }
+
+    /**
+     * restartEC2instance
+     * Used to restart already existing (but stopped) instances
+     * @param instanceID - the stopped instance
+     * @return if the stopped instance has been restart successfully
+     */
+    public Boolean restartEC2instance(String instanceID){
+        try{
+            StartInstancesRequest request = new StartInstancesRequest();
+            request.withInstanceIds(instanceID);
+            StartInstancesResult result = mEC2.startInstances(request);
+            List<InstanceStateChange> instancesStates = result.getStartingInstances();
+            for (InstanceStateChange instanceState : instancesStates){
+                if (instanceState.getInstanceId().equals(instanceID)){
+                    return instanceState.getCurrentState().getName().equals("running") || instanceState.getCurrentState().getName().equals("pending");
+                }
+            }
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
     }
 
     /**
@@ -184,12 +215,12 @@ public class mAWS {
         DescribeInstancesResult describeInstancesRequest = mEC2.describeInstances();
         List<Reservation> reservations = describeInstancesRequest.getReservations();
 
-        Set<Instance> instances = new HashSet<>();
+        Set<Instance> instances = new HashSet<Instance>();
         for (Reservation reservation : reservations) {
             instances.addAll(reservation.getInstances());
         }
 
-        ArrayList<String> instancesId = new ArrayList<>();
+        ArrayList<String> instancesId = new ArrayList<String>();
         for (Instance ins : instances){
             instancesId.add(ins.getInstanceId());
         }
@@ -201,20 +232,50 @@ public class mAWS {
      * initialize S3 services
      */
     public void initS3(){
-        mS3 = AmazonS3ClientBuilder
-                .standard()
-                .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                .withRegion(Regions.US_EAST_1)
-                .build();
+        if(this.fromLocal){
+            mS3 = AmazonS3ClientBuilder
+                    .standard()
+                    .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                    .withRegion(Regions.US_EAST_1)
+                    .build();
+        }else{
+            mS3 = AmazonS3ClientBuilder
+                    .standard()
+                    .withRegion(Regions.US_EAST_1)
+                    .build();
+        }
     }
 
     /**
      * @return S3 url of the uploaded file
      */
-    public String mUploadS3(String bucketName, String key, File file){
-        mS3.createBucket(bucketName); // open connection with the S3 client
-        mS3.putObject(new PutObjectRequest(bucketName, key, file)); // upload the file to the bucket
-        return "https://s3.amazonaws.com/" + bucketName + "/" + key; // return the url of the uploaded file
+    public String mUploadS3(String bucketName, String folderName, String key, File file){
+        if (folderName != null){
+            mS3.createBucket(bucketName); // open connection with the S3 client
+            mS3.putObject(new PutObjectRequest(bucketName, folderName + "/" + key, file)); // upload the file to the bucket
+            return "https://s3.amazonaws.com/" + bucketName + "/" + folderName + "/" + key; // return the url of the uploaded file
+        } else{
+            mS3.createBucket(bucketName); // open connection with the S3 client
+            mS3.putObject(new PutObjectRequest(bucketName, key, file)); // upload the file to the bucket
+            return "https://s3.amazonaws.com/" + bucketName + "/" + key; // return the url of the uploaded file
+        }
+    }
+
+    public void mCreateFolderS3(String bucketName, String folderName) {
+        // create meta-data for your folder and set content-length to 0
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentLength(0);
+
+        // create empty content
+        InputStream emptyContent = new ByteArrayInputStream(new byte[0]);
+
+
+        // create a PutObjectRequest passing the folder name suffixed by /
+        PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName,
+                folderName + "/", emptyContent, metadata);
+
+        // send request to S3 to create folder
+        mS3.putObject(putObjectRequest);
     }
 
     /**
@@ -222,6 +283,10 @@ public class mAWS {
      */
     public S3Object mDownloadS3file(String bucketName, String key){
         return mS3.getObject(new GetObjectRequest(bucketName, key));
+    }
+
+    public boolean doesFileExist(String bucketName, String key){
+        return mS3.doesObjectExist(bucketName, key);
     }
 
     /**
@@ -254,11 +319,18 @@ public class mAWS {
      * initialize SQS services
      */
     public void initSQS(){
-        mSQS = AmazonSQSClientBuilder
-                .standard()
-                .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                .withRegion(Regions.US_EAST_1)
-                .build();
+        if(this.fromLocal){
+            mSQS = AmazonSQSClientBuilder
+                    .standard()
+                    .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                    .withRegion(Regions.US_EAST_1)
+                    .build();
+        }else{
+            mSQS = AmazonSQSClientBuilder
+                    .standard()
+                    .withRegion(Regions.US_EAST_1)
+                    .build();
+        }
     }
 
     /**
@@ -267,7 +339,7 @@ public class mAWS {
      * @return list of each queue's URL
      */
     public HashMap<String, String> initSQSqueues(ArrayList<Entry<String, String>> queues){
-        HashMap<String, String> queuesURLs = new HashMap<>();
+        HashMap<String, String> queuesURLs = new HashMap<String, String>();
         String queueURL = null;
 
         for (Entry<String, String> pair : queues) {
@@ -278,7 +350,7 @@ public class mAWS {
             catch(AmazonServiceException exception) {
                 if (exception.getStatusCode() == 400) { // not found
                     CreateQueueRequest createQueueRequest = new CreateQueueRequest(queueName);
-                    Map<String, String> attributes = new HashMap<>();
+                    Map<String, String> attributes = new HashMap<String, String>();
                     attributes.put("VisibilityTimeout", pair.getValue());
                     createQueueRequest.setAttributes(attributes);
                     queueURL = mSQS.createQueue(createQueueRequest).getQueueUrl();
@@ -304,8 +376,8 @@ public class mAWS {
      * @return URL of the queue
      */
     public String initSQSqueues(String queueName, String visibilityTimeout){
-        ArrayList<Entry<String, String>> queue = new ArrayList<>();
-        queue.add(new SimpleEntry<>(queueName, visibilityTimeout));
+        ArrayList<Entry<String, String>> queue = new ArrayList<Entry<String, String>>();
+        queue.add(new SimpleEntry<String, String>(queueName, visibilityTimeout));
         return initSQSqueues(queue).get(queueName);
     }
 
@@ -365,11 +437,10 @@ public class mAWS {
      *
      * @param userData file containing the script
      * @return script encoded in base64
-     * @throws IOException
      */
-    private String getScript(String userData) {
+    private String getScript(String bucketName, String userData) {
         //Download script from S3
-        S3Object object = mDownloadS3file(Header.APP_BUCKET_NAME, userData);
+        S3Object object = mDownloadS3file(bucketName, userData);
         InputStream input = object.getObjectContent();
 
         String script = null;
@@ -379,7 +450,7 @@ public class mAWS {
             String line;
             while ((line = reader.readLine()) != null){
                 stringBuilder.append(line);
-                stringBuilder.append(System.lineSeparator());
+                stringBuilder.append("\n");
             }
             script = stringBuilder.toString();
             reader.close();
