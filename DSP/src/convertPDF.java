@@ -310,7 +310,7 @@ public class convertPDF {
         uploadJars(myAWS);
         ArrayList<String> managerInstance = myAWS.initEC2instance("ami-0080e4c5bc078760e",
                 1, 1, InstanceType.T2Micro.toString(), Header.APP_BUCKET_NAME + LocalAppID,
-                Header.INPUT_FOLDER_NAME + "/" + Header.MANAGER_SCRIPT, Header.INSTANCE_KEY_NAME, TAG_MANAGER);
+                Header.INPUT_FOLDER_NAME + "/" + Header.MANAGER_SCRIPT, Header.INSTANCE_MANAGER_KEY_NAME, TAG_MANAGER);
         return 	managerInstance.get(0);
     }
 
@@ -431,7 +431,7 @@ public class convertPDF {
         File managerScriptFile = new File("C:\\Users\\MaorA\\IdeaProjects\\DSP\\src\\scriptManager.txt");
         String path = myAWS.mUploadS3(Header.APP_BUCKET_NAME + LocalAppID, Header.INPUT_FOLDER_NAME, Header.MANAGER_SCRIPT, managerScriptFile);
         System.out.println(" Stage 2|    Manager script has been uploaded to " + path + "\n");
-//        File workerScriptFile = new File("scriptWorker.txt");
+//        File workerScriptFile = new File("scriptWorker.txt.txt");
 //        myAWS.mUploadS3(Header.APP_BUCKET_NAME, Header.WORKER_SCRIPT, workerScriptFile);
 //        System.out.println("Worker Script Uploaded");
     }

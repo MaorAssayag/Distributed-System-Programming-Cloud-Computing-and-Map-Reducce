@@ -3,6 +3,7 @@
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
       <artifact name="ManagerApp:jar" />
+      <artifact name="Worker:jar" />
     </artifacts-to-build>
   </component>
   <component name="ChangeListManager">
@@ -30,76 +31,43 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/mAWS.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="408">
-              <caret line="168" column="58" selection-start-line="168" selection-start-column="58" selection-end-line="168" selection-end-column="58" />
+            <state relative-caret-position="1512">
+              <caret line="161" column="87" selection-start-line="161" selection-start-column="87" selection-end-line="161" selection-end-column="87" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="docComment;class#mAWS#0" />
                 <element signature="docComment;method#mAWS#0;class#mAWS#0" />
                 <element signature="docComment;method#initEC2#0;class#mAWS#0" />
                 <element signature="docComment;method#getEC2instanceID#0;class#mAWS#0" />
-                <element signature="e#3152#3830#1" />
-                <element signature="e#3269#3820#1" />
-                <element signature="e#3330#3806#1" />
-                <element signature="e#3446#3788#1" />
-                <element signature="e#3602#3766#1" />
                 <element signature="docComment;method#initEC2instance#0;class#mAWS#0" />
-                <element signature="e#4490#4548#0" />
-                <element signature="e#4569#4685#0" />
                 <element signature="docComment;method#restartEC2instance#0;class#mAWS#0" />
                 <element signature="method#restartEC2instance#0;class#mAWS#0" />
-                <element signature="e#6373#7015#0" />
-                <element signature="e#6725#6980#1" />
-                <element signature="e#6796#6966#1" />
-                <element signature="e#7034#7104#0" />
                 <element signature="docComment;method#terminateEC2instance#0;class#mAWS#0" />
                 <element signature="method#terminateEC2instance#0;class#mAWS#0" />
                 <element signature="docComment;method#terminateEC2instance#1;class#mAWS#0" />
-                <element signature="method#terminateEC2instance#1;class#mAWS#0" />
-                <element signature="method#terminateEC2all#0;class#mAWS#0" />
-                <element signature="e#7965#8034#1" />
-                <element signature="e#8139#8200#1" />
                 <element signature="docComment;method#initS3#0;class#mAWS#0" />
                 <element signature="docComment;method#mUploadS3#0;class#mAWS#0" />
                 <element signature="method#mUploadS3#0;class#mAWS#0" />
-                <element signature="e#8454#8801#1" />
-                <element signature="e#8805#9152#1" />
-                <element signature="method#createFolder#0;class#mAWS#0" />
                 <element signature="docComment;method#mDownloadS3file#0;class#mAWS#0" />
-                <element signature="n#!!block;n#doesFileExsit#0;n#mAWS#0" />
                 <element signature="docComment;method#mDeleteS3file#0;class#mAWS#0" />
                 <element signature="method#mDeleteS3file#0;class#mAWS#0" />
                 <element signature="docComment;method#mDeleteS3bucket#0;class#mAWS#0" />
                 <element signature="docComment;method#mDeleteS3bucketFiles#0;class#mAWS#0" />
                 <element signature="method#mDeleteS3bucketFiles#0;class#mAWS#0" />
-                <element signature="e#9909#9983#1" />
                 <element signature="docComment;method#initSQS#0;class#mAWS#0" />
                 <element signature="docComment;method#initSQSqueues#0;class#mAWS#0" />
-                <element signature="e#10823#10908#0" />
-                <element signature="e#11543#11908#1" />
-                <element signature="e#11950#12010#0" />
                 <element signature="docComment;method#initSQSqueues#1;class#mAWS#0" />
                 <element signature="docComment;method#sendSQSmessage#0;class#mAWS#0" />
                 <element signature="method#sendSQSmessage#0;class#mAWS#0" />
                 <element signature="docComment;method#receiveSQSmessage#0;class#mAWS#0" />
                 <element signature="docComment;method#receiveSQSmessage#1;class#mAWS#0" />
-                <element signature="method#receiveSQSmessage#1;class#mAWS#0" />
                 <element signature="docComment;method#deleteSQSmessage#0;class#mAWS#0" />
-                <element signature="method#deleteSQSmessage#0;class#mAWS#0" />
                 <element signature="docComment;method#deleteSQSqueue#0;class#mAWS#0" />
                 <element signature="docComment;method#deleteSQSqueueMessages#0;class#mAWS#0" />
-                <element signature="method#deleteSQSqueueMessages#0;class#mAWS#0" />
-                <element signature="e#14103#14152#1" />
                 <element signature="docComment;method#getScript#0;class#mAWS#0" />
-                <element signature="method#getScript#0;class#mAWS#0" />
-                <element signature="e#14612#14944#0" />
-                <element signature="e#14756#14859#1" />
-                <element signature="e#14972#15024#0" />
-                <element signature="e#15064#15139#0" />
-                <element signature="e#15171#15217#0" />
               </folding>
             </state>
           </provider>
@@ -108,26 +76,86 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/LocalApp.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="159">
-              <caret line="37" column="30" lean-forward="true" selection-start-line="37" selection-start-column="30" selection-end-line="37" selection-end-column="30" />
+            <state relative-caret-position="336">
+              <caret line="234" column="53" selection-start-line="234" selection-start-column="53" selection-end-line="234" selection-end-column="53" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="docComment;class#LocalApp#0" />
-                <element signature="e#7047#7886#0" />
-                <element signature="e#7921#8267#0" />
-                <element signature="e#8287#8331#0" />
-                <element signature="docComment;method#startManager#0;class#LocalApp#0" />
-                <element signature="docComment;method#checkManager#0;class#LocalApp#0" />
-                <element signature="method#checkManager#0;class#LocalApp#0" />
                 <element signature="docComment;method#uploadFileToS3#0;class#LocalApp#0" />
                 <element signature="docComment;method#send2SQS#0;class#LocalApp#0" />
                 <element signature="docComment;method#waitForAnswer#0;class#LocalApp#0" />
                 <element signature="docComment;method#endManager#0;class#LocalApp#0" />
-                <element signature="e#14756#14819#0" />
-                <element signature="method#uploadJars#0;class#LocalApp#0" />
-                <element signature="e#15316#15665#1" />
-                <element signature="e#15665#15773#1" />
-                <element signature="e#15350#15402#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/ManagerApp.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="191">
+              <caret line="244" column="45" selection-start-line="244" selection-start-column="45" selection-end-line="244" selection-end-column="45" />
+              <folding>
+                <element signature="docComment;class#ManagerApp#0" />
+                <element signature="method#main#0;class#ManagerApp#0" />
+                <element signature="e#1385#4773#0" />
+                <element signature="e#1655#4762#1" />
+                <element signature="e#1625#1871#1" />
+                <element signature="e#2674#2755#0" />
+                <element signature="e#2828#2884#0" />
+                <element signature="e#3091#3150#1" />
+                <element signature="e#4533#4602#1" />
+                <element signature="e#3389#3449#0" />
+                <element signature="e#3510#4093#0" />
+                <element signature="e#4128#4472#0" />
+                <element signature="e#4492#4536#0" />
+                <element signature="method#initializeAllQueues#0;class#ManagerApp#0" />
+                <element signature="e#8374#8578#1" />
+                <element signature="e#9048#9993#1" />
+                <element signature="e#9208#9731#1" />
+                <element signature="e#9919#9979#0" />
+                <element signature="e#7495#7539#0" />
+                <element signature="docComment;method#checkWorkers#0;class#ManagerApp#0" />
+                <element signature="method#checkWorkers#0;class#ManagerApp#0" />
+                <element signature="docComment;method#get1MessageFromSQS#0;class#ManagerApp#0" />
+                <element signature="method#get1MessageFromSQS#0;class#ManagerApp#0" />
+                <element signature="method#initLogger#0;class#ManagerApp#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Worker.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="15">
+              <caret line="162" selection-start-line="162" selection-end-line="162" />
+              <folding>
+                <element signature="docComment;class#ManagerApp#0" />
+                <element signature="e#1871#2118#1" />
+                <element signature="e#2368#2440#0" />
+                <element signature="e#2898#3012#0" />
+                <element signature="e#3567#4150#0" />
+                <element signature="e#4185#4529#0" />
+                <element signature="e#4549#4593#0" />
+                <element signature="docComment;method#initializeAllQueues#0;class#Worker#0" />
+                <element signature="method#initializeAllQueues#0;class#Worker#0" />
+                <element signature="docComment;method#analyzeMessage#0;class#Worker#0" />
+                <element signature="method#analyzeMessage#0;class#Worker#0" />
+                <element signature="e#4921#5513#0" />
+                <element signature="e#5532#5576#0" />
+                <element signature="docComment;method#convertPDF#0;class#Worker#0" />
+                <element signature="e#7143#8054#1" />
+                <element signature="e#7422#7553#0" />
+                <element signature="e#8090#9282#1" />
+                <element signature="e#8782#8798#0" />
+                <element signature="e#9286#9397#1" />
+                <element signature="e#9415#9500#1" />
+                <element signature="e#9564#10000#0" />
+                <element signature="e#9616#9812#0" />
+                <element signature="e#9833#9990#0" />
+                <element signature="docComment;method#get1MessageFromSQS#0;class#Worker#0" />
+                <element signature="method#get1MessageFromSQS#0;class#Worker#0" />
               </folding>
             </state>
           </provider>
@@ -136,50 +164,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Header.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="609">
-              <caret line="29" column="24" selection-start-line="29" selection-start-column="24" selection-end-line="29" selection-end-column="24" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/ManagerApp.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="161">
-              <caret line="110" selection-start-line="108" selection-end-line="110" />
-              <folding>
-                <element signature="docComment;class#ManagerApp#0" />
-                <element signature="e#1484#4303#0" />
-                <element signature="e#1966#4292#1" />
-                <element signature="e#2152#4100#1" />
-                <element signature="e#3436#3474#0" />
-                <element signature="e#4218#4278#0" />
-                <element signature="e#4339#4922#0" />
-                <element signature="e#4957#5301#0" />
-                <element signature="e#5321#5365#0" />
-                <element signature="method#initializeAllQueues#0;class#ManagerApp#0" />
-                <element signature="e#6048#8308#0" />
-                <element signature="e#6453#6502#0" />
-                <element signature="e#6794#8227#0" />
-                <element signature="e#7033#7846#1" />
-                <element signature="e#7098#7121#0" />
-                <element signature="e#7470#7543#1" />
-                <element signature="e#8246#8298#0" />
-                <element signature="e#8327#8371#0" />
-                <element signature="method#convertPDF#0;class#ManagerApp#0" />
-                <element signature="e#8602#12153#0" />
-                <element signature="e#8752#12020#1" />
-                <element signature="e#8801#9731#1" />
-                <element signature="e#9769#10671#1" />
-                <element signature="e#10048#10179#0" />
-                <element signature="e#10707#11890#1" />
-                <element signature="e#11399#11415#0" />
-                <element signature="e#11894#12006#1" />
-                <element signature="e#12024#12110#1" />
-                <element signature="e#12174#12477#0" />
-                <element signature="e#12191#12360#0" />
-                <element signature="e#12381#12539#0" />
-              </folding>
+            <state relative-caret-position="193">
+              <caret line="57" column="33" selection-start-line="57" selection-start-column="33" selection-end-line="57" selection-end-column="33" />
             </state>
           </provider>
         </entry>
@@ -195,16 +181,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>region</find>
-      <find>regio</find>
-      <find>abso</find>
-      <find>PrintWriter</find>
-      <find>AmazonEC2ClientBuilder</find>
-      <find>pdfText2HTML</find>
-      <find>InputStream</find>
-      <find>getScript</find>
-      <find>&lt;</find>
-      <find>tag</find>
       <find>convertPDF</find>
       <find>INPUT_BUCKET_NAME</find>
       <find>LocalAppID</find>
@@ -225,6 +201,16 @@
       <find>Entry</find>
       <find>QUEUE CREATED:</find>
       <find>log</find>
+      <find>tag</find>
+      <find>withUs</find>
+      <find>created</find>
+      <find>2500</find>
+      <find>500</find>
+      <find>initSQSqueues</find>
+      <find>managerID</find>
+      <find>overwriteScript</find>
+      <find>startManager</find>
+      <find>LocalApp waiting for response</find>
     </findStrings>
   </component>
   <component name="IdeDocumentHistory">
@@ -241,15 +227,17 @@
         <option value="$PROJECT_DIR$/pdf.txt" />
         <option value="$PROJECT_DIR$/src/MangerApp.java" />
         <option value="$PROJECT_DIR$/src/tests.java" />
-        <option value="$PROJECT_DIR$/src/scriptManager.txt" />
         <option value="$PROJECT_DIR$/src/convertPDF.java" />
         <option value="$PROJECT_DIR$/src/preUpload.java" />
-        <option value="$PROJECT_DIR$/src/Header.java" />
         <option value="$PROJECT_DIR$/outputFile.HTML" />
         <option value="$PROJECT_DIR$/inputFile.txt" />
-        <option value="$PROJECT_DIR$/src/ManagerApp.java" />
-        <option value="$PROJECT_DIR$/src/LocalApp.java" />
+        <option value="$PROJECT_DIR$/src/scriptManager.txt" />
+        <option value="$PROJECT_DIR$/src/scriptWorker" />
         <option value="$PROJECT_DIR$/src/mAWS.java" />
+        <option value="$PROJECT_DIR$/src/Header.java" />
+        <option value="$PROJECT_DIR$/src/Worker.java" />
+        <option value="$PROJECT_DIR$/src/LocalApp.java" />
+        <option value="$PROJECT_DIR$/src/ManagerApp.java" />
       </list>
     </option>
   </component>
@@ -259,7 +247,7 @@
       <select />
     </treeState>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="-8" />
     <option name="y" value="32" />
     <option name="width" value="1382" />
@@ -270,46 +258,12 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
               <item name="DSP" type="b2602c69:ProjectViewProjectNode" />
               <item name="DSP" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="DSP" type="b2602c69:ProjectViewProjectNode" />
-              <item name="DSP" type="462c0819:PsiDirectoryNode" />
-              <item name=".idea" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="DSP" type="b2602c69:ProjectViewProjectNode" />
-              <item name="DSP" type="462c0819:PsiDirectoryNode" />
-              <item name=".idea" type="462c0819:PsiDirectoryNode" />
-              <item name="artifacts" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="DSP" type="b2602c69:ProjectViewProjectNode" />
-              <item name="DSP" type="462c0819:PsiDirectoryNode" />
-              <item name=".idea" type="462c0819:PsiDirectoryNode" />
-              <item name="inspectionProfiles" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="DSP" type="b2602c69:ProjectViewProjectNode" />
-              <item name="DSP" type="462c0819:PsiDirectoryNode" />
-              <item name="META-INF" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="DSP" type="b2602c69:ProjectViewProjectNode" />
-              <item name="DSP" type="462c0819:PsiDirectoryNode" />
-              <item name="out" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="DSP" type="b2602c69:ProjectViewProjectNode" />
-              <item name="DSP" type="462c0819:PsiDirectoryNode" />
-              <item name="out" type="462c0819:PsiDirectoryNode" />
-              <item name="artifacts" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="DSP" type="b2602c69:ProjectViewProjectNode" />
@@ -325,12 +279,13 @@
         </subPane>
       </pane>
       <pane id="Scope" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1554477847742" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1554681278538" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/out" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
@@ -360,7 +315,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.LocalApp">
+  <component name="RunManager" selected="Application.ManagerApp">
     <configuration name="LocalApp" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="LocalApp" />
       <module name="DSP" />
@@ -399,8 +354,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.LocalApp" />
         <item itemvalue="Application.ManagerApp" />
+        <item itemvalue="Application.LocalApp" />
         <item itemvalue="Application.tests" />
         <item itemvalue="Application.convertPDF" />
       </list>
@@ -423,11 +378,13 @@
       <workItem from="1554025351930" duration="65250000" />
       <workItem from="1554378839005" duration="705000" />
       <workItem from="1554390786250" duration="36445000" />
+      <workItem from="1554571027284" duration="1043000" />
+      <workItem from="1554649823724" duration="22070000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="143071000" />
+    <option name="totallyTimeSpent" value="166184000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -440,8 +397,41 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="32" width="1382" height="744" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.7479542" visible="true" weight="0.16792738" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.7479542" visible="true" weight="0.17246597" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Image Layers" order="2" />
+      <window_info id="Designer" order="3" />
+      <window_info id="UI Designer" order="4" />
+      <window_info id="Capture Tool" order="5" />
+      <window_info id="Favorites" order="6" side_tool="true" />
+      <window_info id="aws.explorer" order="7" sideWeight="0.25204584" side_tool="true" weight="0.24281392" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" sideWeight="0.49924356" weight="0.64648116" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.31096563" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.6792144" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.3289689" />
+      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="8" />
+      <window_info anchor="bottom" id="Database Changes" order="9" />
+      <window_info anchor="bottom" id="Terminal" order="10" weight="0.7626841" />
+      <window_info anchor="bottom" id="Event Log" order="11" sideWeight="0.50075644" side_tool="true" weight="0.66939443" />
+      <window_info anchor="bottom" id="Messages" order="12" weight="0.7299509" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.24962178" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Palette" order="3" />
+      <window_info anchor="right" id="Database" order="4" weight="0.32980332" />
+      <window_info anchor="right" id="Theme Preview" order="5" />
+      <window_info anchor="right" id="Maven" order="6" weight="0.32980332" />
+      <window_info anchor="right" id="Capture Analysis" order="7" />
+      <window_info anchor="right" id="Palette&#9;" order="8" />
+    </layout>
+    <layout-to-restore>
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.7479542" visible="true" weight="0.17246597" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -471,38 +461,6 @@
       <window_info anchor="right" id="Maven" order="6" weight="0.32980332" />
       <window_info anchor="right" id="Capture Analysis" order="7" />
       <window_info anchor="right" id="Palette&#9;" order="8" />
-    </layout>
-    <layout-to-restore>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.7479542" visible="true" weight="0.17170954" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info id="Image Layers" order="2" />
-      <window_info id="Designer" order="3" />
-      <window_info id="UI Designer" order="4" />
-      <window_info id="Capture Tool" order="5" />
-      <window_info id="Favorites" order="6" side_tool="true" />
-      <window_info id="aws.explorer" order="7" sideWeight="0.25204584" side_tool="true" weight="0.24281392" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" sideWeight="0.49924356" weight="0.29296234" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.17348608" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.6792144" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" weight="0.3289689" />
-      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="8" />
-      <window_info anchor="bottom" id="Database Changes" order="9" />
-      <window_info anchor="bottom" id="Terminal" order="10" weight="0.7626841" />
-      <window_info anchor="bottom" id="Event Log" order="11" sideWeight="0.50075644" side_tool="true" weight="0.66939443" />
-      <window_info anchor="bottom" id="Messages" order="12" weight="0.3289689" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.24962178" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" id="Palette" order="3" />
-      <window_info anchor="right" id="Database" order="4" weight="0.32980332" />
-      <window_info anchor="right" id="Theme Preview" order="5" />
-      <window_info anchor="right" id="Maven" order="6" weight="0.32980332" />
-      <window_info anchor="right" id="Capture Analysis" order="7" />
-      <window_info anchor="right" id="Palette&#9;" order="8" />
     </layout-to-restore>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -513,50 +471,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://C:/Program Files/Java/pdf/jar_files/aws-java-sdk-ec2-1.11.525.jar!/com/amazonaws/services/ec2/model/InstanceState.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="158">
-          <caret line="33" column="18" selection-start-line="33" selection-start-column="18" selection-end-line="33" selection-end-column="18" />
-          <folding>
-            <element signature="e#674#675#0" expanded="true" />
-            <element signature="e#706#707#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.idea/artifacts/ManagerApp.xml" />
-    <entry file="jar://C:/Program Files/Java/jdk-9/lib/src.zip!/java.base/java/io/PrintStream.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="185">
-          <caret line="800" column="16" selection-start-line="800" selection-start-column="16" selection-end-line="800" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk-9/lib/src.zip!/java.xml.bind/javax/xml/bind/JAXBContext.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-42">
-          <caret line="27" column="7" lean-forward="true" selection-start-line="27" selection-start-column="7" selection-end-line="27" selection-end-column="7" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/pdf/jar_files/aws-java-sdk-ec2-1.11.525.jar!/com/amazonaws/services/ec2/model/IamInstanceProfileSpecification.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="195">
-          <caret line="24" column="43" selection-start-line="24" selection-start-column="43" selection-end-line="24" selection-end-column="43" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/META-INF/MANIFEST.MF">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-3654" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/.idea/uiDesigner.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1512" />
@@ -640,23 +554,6 @@
     <entry file="file://$PROJECT_DIR$/.idea/aws.xml">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/S3Sample.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="399">
-          <caret line="61" column="25" lean-forward="true" selection-start-line="61" selection-start-column="25" selection-end-line="61" selection-end-column="25" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/pdf/jar_files/aws-java-sdk-ec2-1.11.525.jar!/com/amazonaws/services/ec2/model/RunInstancesRequest.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="15" column="13" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://C:/Program Files/Java/pdf/jar_files/aws-java-sdk-ec2-1.11.525.jar!/com/amazonaws/services/ec2/model/TerminateInstancesRequest.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-441">
@@ -713,13 +610,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/sample.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="42">
-          <caret line="2" column="6" selection-start-line="2" selection-start-column="6" selection-end-line="2" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://C:/Program Files/Java/jdk-9/lib/src.zip!/java.base/java/util/UUID.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="63">
@@ -735,20 +625,6 @@
             <element signature="e#424#425#0" expanded="true" />
             <element signature="e#468#469#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/tests.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="147">
-          <caret line="7" column="1" lean-forward="true" selection-start-line="7" selection-start-column="1" selection-end-line="7" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scriptManager.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="21">
-          <caret line="1" selection-start-line="1" selection-end-line="3" selection-end-column="24" />
         </state>
       </provider>
     </entry>
@@ -839,20 +715,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/result-file.txt.txt">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
+    <entry file="file://$PROJECT_DIR$/result-file.txt.txt" />
     <entry file="jar://C:/Program Files/Java/pdf/pdfbox-app-1.8.16.jar!/org/apache/pdfbox/pdmodel/PDDocument.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="178">
           <caret line="658" column="18" selection-start-line="658" selection-start-column="18" selection-end-line="658" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/inputFile.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="5" column="80" selection-start-line="5" selection-start-column="80" selection-end-line="5" selection-end-column="80" />
         </state>
       </provider>
     </entry>
@@ -869,155 +736,225 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Header.java">
+    <entry file="file://$PROJECT_DIR$/src/sample.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="609">
-          <caret line="29" column="24" selection-start-line="29" selection-start-column="24" selection-end-line="29" selection-end-column="24" />
+        <state relative-caret-position="42">
+          <caret line="2" column="6" selection-start-line="2" selection-start-column="6" selection-end-line="2" selection-end-column="6" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/outputFile.HTML">
+    <entry file="file://$PROJECT_DIR$/src/S3Sample.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="399">
-          <caret line="19" column="98" selection-start-line="19" selection-start-column="98" selection-end-line="19" selection-end-column="98" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/ManagerApp.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="161">
-          <caret line="110" selection-start-line="108" selection-end-line="110" />
-          <folding>
-            <element signature="docComment;class#ManagerApp#0" />
-            <element signature="e#1484#4303#0" />
-            <element signature="e#1966#4292#1" />
-            <element signature="e#2152#4100#1" />
-            <element signature="e#3436#3474#0" />
-            <element signature="e#4218#4278#0" />
-            <element signature="e#4339#4922#0" />
-            <element signature="e#4957#5301#0" />
-            <element signature="e#5321#5365#0" />
-            <element signature="method#initializeAllQueues#0;class#ManagerApp#0" />
-            <element signature="e#6048#8308#0" />
-            <element signature="e#6453#6502#0" />
-            <element signature="e#6794#8227#0" />
-            <element signature="e#7033#7846#1" />
-            <element signature="e#7098#7121#0" />
-            <element signature="e#7470#7543#1" />
-            <element signature="e#8246#8298#0" />
-            <element signature="e#8327#8371#0" />
-            <element signature="method#convertPDF#0;class#ManagerApp#0" />
-            <element signature="e#8602#12153#0" />
-            <element signature="e#8752#12020#1" />
-            <element signature="e#8801#9731#1" />
-            <element signature="e#9769#10671#1" />
-            <element signature="e#10048#10179#0" />
-            <element signature="e#10707#11890#1" />
-            <element signature="e#11399#11415#0" />
-            <element signature="e#11894#12006#1" />
-            <element signature="e#12024#12110#1" />
-            <element signature="e#12174#12477#0" />
-            <element signature="e#12191#12360#0" />
-            <element signature="e#12381#12539#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/LocalApp.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="159">
-          <caret line="37" column="30" lean-forward="true" selection-start-line="37" selection-start-column="30" selection-end-line="37" selection-end-column="30" />
+        <state relative-caret-position="1008">
+          <caret line="61" column="25" selection-start-line="61" selection-start-column="25" selection-end-line="61" selection-end-column="25" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="docComment;class#LocalApp#0" />
-            <element signature="e#7047#7886#0" />
-            <element signature="e#7921#8267#0" />
-            <element signature="e#8287#8331#0" />
-            <element signature="docComment;method#startManager#0;class#LocalApp#0" />
-            <element signature="docComment;method#checkManager#0;class#LocalApp#0" />
-            <element signature="method#checkManager#0;class#LocalApp#0" />
-            <element signature="docComment;method#uploadFileToS3#0;class#LocalApp#0" />
-            <element signature="docComment;method#send2SQS#0;class#LocalApp#0" />
-            <element signature="docComment;method#waitForAnswer#0;class#LocalApp#0" />
-            <element signature="docComment;method#endManager#0;class#LocalApp#0" />
-            <element signature="e#14756#14819#0" />
-            <element signature="method#uploadJars#0;class#LocalApp#0" />
-            <element signature="e#15316#15665#1" />
-            <element signature="e#15665#15773#1" />
-            <element signature="e#15350#15402#0" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/pdf/jar_files/aws-java-sdk-ec2-1.11.525.jar!/com/amazonaws/services/ec2/model/RunInstancesRequest.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="203" column="31" selection-start-line="203" selection-start-column="31" selection-end-line="203" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk-9/lib/src.zip!/java.base/java/io/PrintWriter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="291" column="11" selection-start-line="291" selection-start-column="11" selection-end-line="291" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk-9/lib/src.zip!/java.logging/java/util/logging/Logger.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3129">
+          <caret line="221" column="13" selection-start-line="221" selection-start-column="13" selection-end-line="221" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scriptManager.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="63">
+          <caret line="3" column="24" lean-forward="true" selection-end-line="3" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scriptWorker.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="42">
+          <caret line="2" column="67" selection-start-line="2" selection-start-column="61" selection-end-line="2" selection-end-column="67" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Header.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="193">
+          <caret line="57" column="33" selection-start-line="57" selection-start-column="33" selection-end-line="57" selection-end-column="33" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/mAWS.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="408">
-          <caret line="168" column="58" selection-start-line="168" selection-start-column="58" selection-end-line="168" selection-end-column="58" />
+        <state relative-caret-position="1512">
+          <caret line="161" column="87" selection-start-line="161" selection-start-column="87" selection-end-line="161" selection-end-column="87" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="docComment;class#mAWS#0" />
             <element signature="docComment;method#mAWS#0;class#mAWS#0" />
             <element signature="docComment;method#initEC2#0;class#mAWS#0" />
             <element signature="docComment;method#getEC2instanceID#0;class#mAWS#0" />
-            <element signature="e#3152#3830#1" />
-            <element signature="e#3269#3820#1" />
-            <element signature="e#3330#3806#1" />
-            <element signature="e#3446#3788#1" />
-            <element signature="e#3602#3766#1" />
             <element signature="docComment;method#initEC2instance#0;class#mAWS#0" />
-            <element signature="e#4490#4548#0" />
-            <element signature="e#4569#4685#0" />
             <element signature="docComment;method#restartEC2instance#0;class#mAWS#0" />
             <element signature="method#restartEC2instance#0;class#mAWS#0" />
-            <element signature="e#6373#7015#0" />
-            <element signature="e#6725#6980#1" />
-            <element signature="e#6796#6966#1" />
-            <element signature="e#7034#7104#0" />
             <element signature="docComment;method#terminateEC2instance#0;class#mAWS#0" />
             <element signature="method#terminateEC2instance#0;class#mAWS#0" />
             <element signature="docComment;method#terminateEC2instance#1;class#mAWS#0" />
-            <element signature="method#terminateEC2instance#1;class#mAWS#0" />
-            <element signature="method#terminateEC2all#0;class#mAWS#0" />
-            <element signature="e#7965#8034#1" />
-            <element signature="e#8139#8200#1" />
             <element signature="docComment;method#initS3#0;class#mAWS#0" />
             <element signature="docComment;method#mUploadS3#0;class#mAWS#0" />
             <element signature="method#mUploadS3#0;class#mAWS#0" />
-            <element signature="e#8454#8801#1" />
-            <element signature="e#8805#9152#1" />
-            <element signature="method#createFolder#0;class#mAWS#0" />
             <element signature="docComment;method#mDownloadS3file#0;class#mAWS#0" />
-            <element signature="n#!!block;n#doesFileExsit#0;n#mAWS#0" />
             <element signature="docComment;method#mDeleteS3file#0;class#mAWS#0" />
             <element signature="method#mDeleteS3file#0;class#mAWS#0" />
             <element signature="docComment;method#mDeleteS3bucket#0;class#mAWS#0" />
             <element signature="docComment;method#mDeleteS3bucketFiles#0;class#mAWS#0" />
             <element signature="method#mDeleteS3bucketFiles#0;class#mAWS#0" />
-            <element signature="e#9909#9983#1" />
             <element signature="docComment;method#initSQS#0;class#mAWS#0" />
             <element signature="docComment;method#initSQSqueues#0;class#mAWS#0" />
-            <element signature="e#10823#10908#0" />
-            <element signature="e#11543#11908#1" />
-            <element signature="e#11950#12010#0" />
             <element signature="docComment;method#initSQSqueues#1;class#mAWS#0" />
             <element signature="docComment;method#sendSQSmessage#0;class#mAWS#0" />
             <element signature="method#sendSQSmessage#0;class#mAWS#0" />
             <element signature="docComment;method#receiveSQSmessage#0;class#mAWS#0" />
             <element signature="docComment;method#receiveSQSmessage#1;class#mAWS#0" />
-            <element signature="method#receiveSQSmessage#1;class#mAWS#0" />
             <element signature="docComment;method#deleteSQSmessage#0;class#mAWS#0" />
-            <element signature="method#deleteSQSmessage#0;class#mAWS#0" />
             <element signature="docComment;method#deleteSQSqueue#0;class#mAWS#0" />
             <element signature="docComment;method#deleteSQSqueueMessages#0;class#mAWS#0" />
-            <element signature="method#deleteSQSqueueMessages#0;class#mAWS#0" />
-            <element signature="e#14103#14152#1" />
             <element signature="docComment;method#getScript#0;class#mAWS#0" />
-            <element signature="method#getScript#0;class#mAWS#0" />
-            <element signature="e#14612#14944#0" />
-            <element signature="e#14756#14859#1" />
-            <element signature="e#14972#15024#0" />
-            <element signature="e#15064#15139#0" />
-            <element signature="e#15171#15217#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/tests.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="147">
+          <caret line="7" column="1" selection-start-line="7" selection-start-column="1" selection-end-line="7" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/pdf/jar_files/aws-java-sdk-sqs-1.11.525.jar!/com/amazonaws/services/sqs/model/Message.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="160">
+          <caret line="105" column="19" selection-start-line="105" selection-start-column="19" selection-end-line="105" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk-9/lib/src.zip!/java.base/java/util/List.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="223">
+          <caret line="518" column="9" selection-start-line="518" selection-start-column="9" selection-end-line="518" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk-9/lib/src.zip!/java.base/java/io/File.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="362">
+          <caret line="1017" column="19" selection-start-line="1017" selection-start-column="19" selection-end-line="1017" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/inputFile.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="441">
+          <caret line="21" column="63" selection-start-line="21" selection-start-column="63" selection-end-line="21" selection-end-column="63" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Worker.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15">
+          <caret line="162" selection-start-line="162" selection-end-line="162" />
+          <folding>
+            <element signature="docComment;class#ManagerApp#0" />
+            <element signature="e#1871#2118#1" />
+            <element signature="e#2368#2440#0" />
+            <element signature="e#2898#3012#0" />
+            <element signature="e#3567#4150#0" />
+            <element signature="e#4185#4529#0" />
+            <element signature="e#4549#4593#0" />
+            <element signature="docComment;method#initializeAllQueues#0;class#Worker#0" />
+            <element signature="method#initializeAllQueues#0;class#Worker#0" />
+            <element signature="docComment;method#analyzeMessage#0;class#Worker#0" />
+            <element signature="method#analyzeMessage#0;class#Worker#0" />
+            <element signature="e#4921#5513#0" />
+            <element signature="e#5532#5576#0" />
+            <element signature="docComment;method#convertPDF#0;class#Worker#0" />
+            <element signature="e#7143#8054#1" />
+            <element signature="e#7422#7553#0" />
+            <element signature="e#8090#9282#1" />
+            <element signature="e#8782#8798#0" />
+            <element signature="e#9286#9397#1" />
+            <element signature="e#9415#9500#1" />
+            <element signature="e#9564#10000#0" />
+            <element signature="e#9616#9812#0" />
+            <element signature="e#9833#9990#0" />
+            <element signature="docComment;method#get1MessageFromSQS#0;class#Worker#0" />
+            <element signature="method#get1MessageFromSQS#0;class#Worker#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outputFile.HTML">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="33" column="8" lean-forward="true" selection-start-line="33" selection-start-column="8" selection-end-line="33" selection-end-column="71" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/LocalApp.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="336">
+          <caret line="234" column="53" selection-start-line="234" selection-start-column="53" selection-end-line="234" selection-end-column="53" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="docComment;class#LocalApp#0" />
+            <element signature="docComment;method#uploadFileToS3#0;class#LocalApp#0" />
+            <element signature="docComment;method#send2SQS#0;class#LocalApp#0" />
+            <element signature="docComment;method#waitForAnswer#0;class#LocalApp#0" />
+            <element signature="docComment;method#endManager#0;class#LocalApp#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ManagerApp.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="191">
+          <caret line="244" column="45" selection-start-line="244" selection-start-column="45" selection-end-line="244" selection-end-column="45" />
+          <folding>
+            <element signature="docComment;class#ManagerApp#0" />
+            <element signature="method#main#0;class#ManagerApp#0" />
+            <element signature="e#1385#4773#0" />
+            <element signature="e#1655#4762#1" />
+            <element signature="e#1625#1871#1" />
+            <element signature="e#2674#2755#0" />
+            <element signature="e#2828#2884#0" />
+            <element signature="e#3091#3150#1" />
+            <element signature="e#4533#4602#1" />
+            <element signature="e#3389#3449#0" />
+            <element signature="e#3510#4093#0" />
+            <element signature="e#4128#4472#0" />
+            <element signature="e#4492#4536#0" />
+            <element signature="method#initializeAllQueues#0;class#ManagerApp#0" />
+            <element signature="e#8374#8578#1" />
+            <element signature="e#9048#9993#1" />
+            <element signature="e#9208#9731#1" />
+            <element signature="e#9919#9979#0" />
+            <element signature="e#7495#7539#0" />
+            <element signature="docComment;method#checkWorkers#0;class#ManagerApp#0" />
+            <element signature="method#checkWorkers#0;class#ManagerApp#0" />
+            <element signature="docComment;method#get1MessageFromSQS#0;class#ManagerApp#0" />
+            <element signature="method#get1MessageFromSQS#0;class#ManagerApp#0" />
+            <element signature="method#initLogger#0;class#ManagerApp#0" />
           </folding>
         </state>
       </provider>
@@ -1028,7 +965,7 @@
       <state key="ArtifactsStructureConfigurable.UI">
         <settings>
           <artifact-editor />
-          <last-edited>ManagerApp:jar</last-edited>
+          <last-edited>Worker:jar</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>

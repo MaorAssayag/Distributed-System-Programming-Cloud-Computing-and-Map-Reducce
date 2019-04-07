@@ -1,0 +1,4 @@
+#cloud-boothook
+#!/bin/bash
+aws s3 cp s3://mr-dsp-192-pre-upload-jars-scripts/Worker.jar Worker.jar
+java -jar Worker.jar

@@ -13,7 +13,9 @@
 
 public class Header {
     // Key name of the .pem file that contains identifiers to access the instances
-    static final String INSTANCE_KEY_NAME = "managerInstance";
+    static final String INSTANCE_MANAGER_KEY_NAME = "managerInstance";
+    static final String INSTANCE_WORKER_KEY_NAME = "managerInstance";
+    static final String imageID = "ami-0080e4c5bc078760e";
 
     // Bucket with all the jars and scripts
     static final String PRE_UPLOAD_BUCKET_NAME = "mr-dsp-192-pre-upload-jars-scripts";
@@ -44,9 +46,14 @@ public class Header {
 
     // Jars
     static final String MANAGER_JAR = "ManagerApp.jar";
-    static final String WORKER_JAR = "WorkerApp.jar";
+    static final String WORKER_JAR = "Worker.jar";
 
     // Queues Names
     static final String INPUT_QUEUE_NAME = "inputQueue";
+    static final String INPUT_WORKERS_QUEUE_NAME = "inputWorkerQueue";
+    static final String OUTPUT_WORKERS_QUEUE_NAME = "outputWorkerQueue";
     static final String OUTPUT_QUEUE_NAME = "outputQueue";
+
+    // global waiting time
+    static final int sleep = 1000;
 }

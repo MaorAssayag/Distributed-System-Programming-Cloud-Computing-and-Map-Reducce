@@ -117,6 +117,27 @@ public class mAWS {
         return null;
     }
 
+    public int getEC2instancesByTagState(Tag tag, String state){
+        List<Reservation> reservations = mEC2.describeInstances().getReservations();
+        int ans = 0;
+        for (Reservation reservation : reservations) {
+            List<Instance> instances = reservation.getInstances();
+            for (Instance instance : instances) {
+                for (Tag instanceTag : instance.getTags()) {
+                    if(instanceTag.getKey().equals(tag.getKey()) && instanceTag.getValue().equals(tag.getValue())){
+                        // e.g.  the instance Tag name=Type and the value=Manager
+                        if(instance.getState().getName().equals(state)) {
+                            //System.out.println(instance.getInstanceId());
+                            ans++;
+                        }
+                    }
+                }
+            }
+        }
+        return ans;
+    }
+
+
     /**
      *
      * @param imageId (for ex. "ami-b66ed3de")
@@ -138,14 +159,14 @@ public class mAWS {
 
         } catch (Exception e) {
             //e.printStackTrace();
-            System.out.println(" Manager starting without a script");
+            System.out.println("\"             Starting an instance without a script \n");
         }
 
         RunInstancesRequest request = new RunInstancesRequest(imageId, minCount, maxCount);
         request.setInstanceType(type);
         request.withKeyName(keyName);
-        request.withIamInstanceProfile(
-                new IamInstanceProfileSpecification().withArn("arn:aws:iam::951925995010:instance-profile/managerInstance"));
+        request.withIamInstanceProfile(new IamInstanceProfileSpecification().withName(keyName));
+                //new IamInstanceProfileSpecification().withArn("arn:aws:iam::951925995010:instance-profile/managerInstance"));
         if (userScript != null)
             request.withUserData(userScript);
 

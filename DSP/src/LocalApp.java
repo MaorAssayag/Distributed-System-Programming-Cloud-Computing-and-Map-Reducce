@@ -42,8 +42,8 @@ public class LocalApp {
         String outputFileName = args[1];
         int n = Integer.parseInt(args[2]);
         boolean terminate = false;
-        boolean overwriteScript = false;
-        boolean overwriteJars = false;
+        boolean overwriteScript = true;
+        boolean overwriteJars = true;
 
         /** 1. if you want to terminate the manager args = inputFileName outputFileName n terminate */
         if (args.length > 3 && args[3].equals("terminate"))
@@ -87,7 +87,9 @@ public class LocalApp {
                     // Promotion of rebooted Manager
                     System.out.println(" Stage 2|    Manager instance has been rebooted, Manager ID : " + managerID + "\n");
                 } else{
-                    managerID = startManager(myAWS, overwriteScript, overwriteJars);
+                    //managerID = startManager(myAWS, overwriteScript, overwriteJars);
+                    uploadScripts(myAWS, overwriteScript);
+                    uploadJars(myAWS, overwriteJars);
                     // Promotion of new Manager
                     System.out.println("             Manager instance has been started, Manager ID : " + managerID + "\n");
                 }
@@ -113,23 +115,23 @@ public class LocalApp {
 
             /** 5. Wait & Receive the response from the Manager instance for the operation that has been requested*/
             System.out.println(" Stage 5|    Waiting for response from the Manager... \n");
-            String resultURL = waitForAnswer(myAWS, shortLocalAppID, 2000);
+            String resultURL = waitForAnswer(myAWS, shortLocalAppID, 500);
             System.out.println("             Response from the Manager is ready on : "+ resultURL + "\n");
 //
 //
             /** 6. Download the operation summary file from S3 & Create an HTML file representing the results*/
             String outputFilePath = downloadResult(myAWS, resultURL, outputFileName);
             System.out.println(" Stage 6|    Summary file received in the Local AWS App \n");
-            System.out.println("             HTML file representing the results has been created on : " + outputFilePath + "\n");
+            System.out.println("             HTML file representing the results has been created localy on : " + outputFilePath + "\n");
 
 
-//            /** 7. Send a terminate message to the manager if it received terminate as one of the input arguments*/
-//            if (terminate) {
-//                endManager(myAWS, managerID, 2500);
-//                System.out.println(" Stage 7|    Manager has been terminated as requested \n");
-//                System.out.println(" Stage 8|    Local AWS App finished with terminating the Manager");
-//            }else
-//                System.out.println(" Stage 7|    Local AWS App finished without terminating the Manager");
+            /** 7. Send a terminate message to the manager if it received terminate as one of the input arguments*/
+            if (terminate) {
+                endManager(myAWS, managerID, 2500);
+                System.out.println(" Stage 7|    Manager has been terminated as requested \n");
+                System.out.println(" Stage 8|    Local AWS App finished with terminating the Manager");
+            }else
+                System.out.println(" Stage 7|    Local AWS App finished without terminating the Manager");
 
             System.out.println(" _______________   __________ \n" +
                     " ___  ____/___  | / /___  __ \\\n" +
@@ -174,9 +176,9 @@ public class LocalApp {
     private static String startManager(mAWS myAWS, boolean overwriteScript, boolean overwriteJars) {
         uploadScripts(myAWS, overwriteScript);
         uploadJars(myAWS, overwriteJars);
-        ArrayList<String> managerInstance = myAWS.initEC2instance("ami-0080e4c5bc078760e",
+        ArrayList<String> managerInstance = myAWS.initEC2instance(Header.imageID,
                 1, 1, InstanceType.T2Micro.toString(), Header.PRE_UPLOAD_BUCKET_NAME,
-                Header.MANAGER_SCRIPT, Header.INSTANCE_KEY_NAME, TAG_MANAGER);
+                Header.MANAGER_SCRIPT, Header.INSTANCE_MANAGER_KEY_NAME, TAG_MANAGER);
         return 	managerInstance.get(0);
     }
 
@@ -230,7 +232,7 @@ public class LocalApp {
         List<Message> messages;
         String resultURL = null;
         String queueUrl = aws.initSQSqueues(Header.OUTPUT_QUEUE_NAME, "0");
-        System.out.println("             LocalApp waiting for response from the following queue :" + Header.OUTPUT_QUEUE_NAME + "\n");
+        System.out.println("             LocalApp is waiting for response from the following queue : " + Header.OUTPUT_QUEUE_NAME + "\n");
 
         while(true) {
             messages = aws.receiveSQSmessage(queueUrl); // Receive List of all messages in queue
@@ -322,12 +324,14 @@ public class LocalApp {
             String path = myAWS.mUploadS3(Header.PRE_UPLOAD_BUCKET_NAME, null, Header.MANAGER_SCRIPT, managerScriptFile);
             System.out.println("             Manager script has been uploaded to " + path + "\n");
 
+            File workerScriptFile = new File("C:\\Users\\MaorA\\IdeaProjects\\DSP\\src\\scriptWorker.txt");
+            String path2 = myAWS.mUploadS3(Header.PRE_UPLOAD_BUCKET_NAME, null, Header.WORKER_SCRIPT, workerScriptFile);
+            System.out.println("             Worker script has been uploaded to " + path2 + "\n");
+
         }else{
             System.out.println("             Manager script already exist" + "\n");
+            System.out.println("             Worker script already exist" + "\n");
         }
-//        File workerScriptFile = new File("scriptWorker.txt");
-//        myAWS.mUploadS3(Header.APP_BUCKET_NAME, Header.WORKER_SCRIPT, workerScriptFile);
-//        System.out.println("Worker Script Uploaded");
     }
 
     private static void uploadJars(mAWS myAWS, boolean overwrite) {
@@ -335,20 +339,16 @@ public class LocalApp {
 
             File managerFile = new File("C:\\Users\\MaorA\\IdeaProjects\\DSP\\out\\artifacts\\ManagerApp_jar\\ManagerApp.jar");
             String path = myAWS.mUploadS3(Header.PRE_UPLOAD_BUCKET_NAME, null, Header.MANAGER_JAR, managerFile);
-            System.out.println("             Manager jar has been uploaded to " + path + "\n");
+            System.out.println("             Manager.jar has been uploaded to " + path + "\n");
+
+            File workerFile = new File("C:\\Users\\MaorA\\IdeaProjects\\DSP\\out\\artifacts\\Worker_jar\\Worker.jar");
+            String path2 = myAWS.mUploadS3(Header.PRE_UPLOAD_BUCKET_NAME, null, Header.WORKER_JAR, workerFile);
+            System.out.println("             Worker.jar has been uploaded to " + path2 + "\n");
 
         }else{
             System.out.println("             Manager jar already exist" + "\n");
+            System.out.println("             Worker jar already exist" + "\n");
         }
-
-//        File localFile = new File("localapp.jar");
-//        myAWS.mUploadS3(Header.APP_BUCKET_NAME, "localapp.jar", localFile);
-//        System.out.println("LocalApplication Jar Uploaded");
-
-//        File workerFile = new File("workerapp.jar");
-//        myAWS.mUploadS3(Header.APP_BUCKET_NAME, "workerapp.jar", workerFile);
-//        System.out.println("Worker Jar Uploaded");
-//        System.out.println("             Please make sure that public Bucket permission has been enabled on S3 aws console\n");
     }
 }
 

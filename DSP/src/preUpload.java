@@ -48,7 +48,7 @@ public class preUpload {
 //        String path = awsO.mUploadS3(Header.APP_BUCKET_NAME, Header.PRE_FOLDER_NAME, Header.MANAGER_SCRIPT, managerScriptFile);
 //        System.out.println(" Stage 2|    Manager script has been uploaded to " + path + "\n");
 //
-////        File workerScriptFile = new File("scriptWorker.txt");
+////        File workerScriptFile = new File("scriptWorker.txt.txt");
 ////        awsO.mUploadS3(Header.APP_BUCKET_NAME, Header.WORKER_SCRIPT, workerScriptFile);
 ////        System.out.println("Worker Script Uploaded");
 //    }
