@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
-
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.ec2.model.InstanceType;
@@ -42,7 +41,8 @@ public class LocalApp {
         String outputFileName = args[1];
         int n = Integer.parseInt(args[2]);
         boolean terminate = false;
-        boolean overwriteScript = true;
+
+        boolean overwriteScript = false;
         boolean overwriteJars = true;
 
         /** 1. if you want to terminate the manager args = inputFileName outputFileName n terminate */
@@ -63,7 +63,7 @@ public class LocalApp {
                         "        _\\///________\\///________\\///____\\///________\\///////////_____\n");
         System.out.println(" Distriduted System Programming : PDF Document Conversion in the Cloud");
         System.out.println(" By Maor Assayag & Refahel Shetrit \n");
-        System.out.println(" Stage 1|    Local AWS App has been started \n");
+        System.out.println("\n Stage 1|    Local AWS App has been started \n");
 
         // Initialize mAWS object and get a random UUID
         LocalAppID = UUID.randomUUID().toString();
@@ -77,7 +77,7 @@ public class LocalApp {
             managerID = results[0];
             if (managerID != null) {
                 // Promotion of running Manager
-                System.out.println(" Stage 2|    Manager instance already running, Manager ID : " + managerID + "\n");
+                System.out.println("\n Stage 2|    Manager instance already running, Manager ID : " + managerID + "\n");
             } else {
                 managerID = results[1];
                 Boolean restartResult = false;
@@ -85,11 +85,11 @@ public class LocalApp {
                     restartResult = myAWS.restartEC2instance(managerID);
                 if (restartResult){
                     // Promotion of rebooted Manager
-                    System.out.println(" Stage 2|    Manager instance has been rebooted, Manager ID : " + managerID + "\n");
+                    System.out.println("\n Stage 2|    Manager instance has been rebooted, Manager ID : " + managerID + "\n");
                 } else{
-                    //managerID = startManager(myAWS, overwriteScript, overwriteJars);
-                    uploadScripts(myAWS, overwriteScript);
-                    uploadJars(myAWS, overwriteJars);
+                    managerID = startManager(myAWS, overwriteScript, overwriteJars);
+//                    uploadScripts(myAWS, overwriteScript);
+//                    uploadJars(myAWS, overwriteJars);
                     // Promotion of new Manager
                     System.out.println("             Manager instance has been started, Manager ID : " + managerID + "\n");
                 }
@@ -99,39 +99,43 @@ public class LocalApp {
             /** 3. Upload the input file to this LocalApp S3 bucket in folder INPUT_FOLDER_NAME*/
             //myAWS.mCreateFolderS3(Header.APP_BUCKET_NAME + shortLocalAppID, Header.INPUT_FOLDER_NAME);
             String uploadedFileURL = uploadFileToS3(myAWS, inputFileName, Header.INPUT_FOLDER_NAME);
-            System.out.println(" Stage 3|    The input file has been uploaded to " + uploadedFileURL + "\n");
+            System.out.println("\n Stage 3|    The input file has been uploaded to " + uploadedFileURL + "\n");
 
 
             /** 4. Send the uploaded file URL to the SQS queue*/
+            if (n > 19){
+                n = 19;
+                System.out.println("             Free-tire on EC2 supports up to 19 T2.micro instances of workers, n decreased to 19\n");
+            }
             String msg = LocalAppID + " " + terminate + " " + n + " " + uploadedFileURL;
             send2SQS(myAWS, msg);
             if (terminate){
-                System.out.println(" Stage 4|    Terminate message has been sent to the SQS queue with the following message : \n");
+                System.out.println("\n Stage 4|    Request with terminate message has been sent to the input queue with the following message : \n");
                 System.out.println("             " + msg + "\n");
             }else{
-                System.out.println(" Stage 4|    The file URL has been sent to the SQS queue with the following message : \n");
+                System.out.println("\n Stage 4|    The file URL has been sent to the SQS queue with the following message : \n");
                 System.out.println("             " + msg + "\n");
             }
 
             /** 5. Wait & Receive the response from the Manager instance for the operation that has been requested*/
-            System.out.println(" Stage 5|    Waiting for response from the Manager... \n");
+            System.out.println("\n Stage 5|    Waiting for response from the Manager on queue " + Header.OUTPUT_QUEUE_NAME + " ... \n");
             String resultURL = waitForAnswer(myAWS, shortLocalAppID, 500);
             System.out.println("             Response from the Manager is ready on : "+ resultURL + "\n");
-//
-//
+
+
             /** 6. Download the operation summary file from S3 & Create an HTML file representing the results*/
             String outputFilePath = downloadResult(myAWS, resultURL, outputFileName);
-            System.out.println(" Stage 6|    Summary file received in the Local AWS App \n");
+            System.out.println("\n Stage 6|    Summary file received in the Local AWS App \n");
             System.out.println("             HTML file representing the results has been created localy on : " + outputFilePath + "\n");
 
 
             /** 7. Send a terminate message to the manager if it received terminate as one of the input arguments*/
             if (terminate) {
-                endManager(myAWS, managerID, 2500);
-                System.out.println(" Stage 7|    Manager has been terminated as requested \n");
-                System.out.println(" Stage 8|    Local AWS App finished with terminating the Manager");
+                endManager(myAWS, managerID, Header.localAppWaiting);
+                System.out.println("\n Stage 7|    Manager has been terminated as requested \n");
+                System.out.println("\n Stage 8|    Local AWS App finished with terminating the Manager");
             }else
-                System.out.println(" Stage 7|    Local AWS App finished without terminating the Manager");
+                System.out.println("\n Stage 7|    Local AWS App finished without terminating the Manager");
 
             System.out.println(" _______________   __________ \n" +
                     " ___  ____/___  | / /___  __ \\\n" +
@@ -232,7 +236,6 @@ public class LocalApp {
         List<Message> messages;
         String resultURL = null;
         String queueUrl = aws.initSQSqueues(Header.OUTPUT_QUEUE_NAME, "0");
-        System.out.println("             LocalApp is waiting for response from the following queue : " + Header.OUTPUT_QUEUE_NAME + "\n");
 
         while(true) {
             messages = aws.receiveSQSmessage(queueUrl); // Receive List of all messages in queue
@@ -240,7 +243,9 @@ public class LocalApp {
                 String[] msg = message.getBody().split(" ");
                 if(msg[0].equals(key)) {
                     String myMessage = message.getReceiptHandle();
-                    resultURL = msg[1];
+                    if (msg.length > 1){
+                        resultURL = msg[1];
+                    }
                     aws.deleteSQSmessage(Header.OUTPUT_QUEUE_NAME, myMessage); // Delete the message from the queue
                     return resultURL;
                 }
@@ -307,16 +312,16 @@ public class LocalApp {
     /**
      * endManager - terminate the Manager Instance on EC2 service
      * @param myAWS mAWS amazon web service object with EC2, S3 & SQS
-     * @param MangerID - EC2 Manger instance ID
+     * @param managerID - EC2 Manger instance ID
      * @param sleep the amount of time in ms between searching for answer in the SQS
      */
-    private static void endManager(mAWS myAWS, String MangerID, int sleep) {
+    private static void endManager(mAWS myAWS, String managerID, int sleep) {
         waitForAnswer(myAWS, Header.TERMINATED_STRING + shortLocalAppID, sleep);
-        myAWS.terminateEC2instance(MangerID);
+        myAWS.terminateEC2instance(managerID);
     }
 
     private static void uploadScripts(mAWS myAWS, boolean overwrite) {
-        System.out.println(" Stage 2|    Uploading files (scripts & jars) to the general Bucket..." + "\n");
+        System.out.println("\n Stage 2|    Uploading files (scripts & jars) to the general Bucket..." + "\n");
 
         if (!myAWS.doesFileExist(Header.PRE_UPLOAD_BUCKET_NAME, Header.MANAGER_SCRIPT) || overwrite){
 

@@ -165,6 +165,7 @@ public class mAWS {
         RunInstancesRequest request = new RunInstancesRequest(imageId, minCount, maxCount);
         request.setInstanceType(type);
         request.withKeyName(keyName);
+        request.withAdditionalInfo("worker");
         request.withIamInstanceProfile(new IamInstanceProfileSpecification().withName(keyName));
                 //new IamInstanceProfileSpecification().withArn("arn:aws:iam::951925995010:instance-profile/managerInstance"));
         if (userScript != null)
@@ -180,7 +181,7 @@ public class mAWS {
         // Create tag request for each instance (if we want to denote 20 workers then we want tags for them)
         for (Instance instance : instances) {
             try {
-                if (instance.getState().getName().equals("pending")){
+                if (instance.getState().getName().equals("pending") || instance.getState().getName().equals("running")){
                     instanceID = instance.getInstanceId();
                     tagsRequest.withResources(instanceID);
                     mEC2.createTags(tagsRequest);

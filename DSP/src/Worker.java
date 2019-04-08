@@ -67,6 +67,7 @@ public class Worker {
                 outputMessage = analyzeMessage(myAWS, currMessage);
 
                 if (outputMessage != null){
+                    index++;
                     //System.out.println("\n Stage 5|    Computing complete, Sending the following message to the output queue : \n");
                     //System.out.println("               " + outputMessage +"\n");
                     /** 5. Send the result to the Manager */

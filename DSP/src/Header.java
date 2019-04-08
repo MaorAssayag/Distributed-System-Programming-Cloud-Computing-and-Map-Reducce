@@ -30,6 +30,7 @@ public class Header {
     // Files
     static final String INPUT_FILE_NAME = "input-file.txt";
     static final String RESULT_FILE_NAME = "result-file.txt";
+    static final String LOGGER_FILE_NAME = "ManagerLogger.txt";
     static final String IMAGE_FORMAT = "png";
     static final String IMAGE_NAME = "temp";
     static final String TEXT_NAME = "temp";
@@ -50,10 +51,13 @@ public class Header {
 
     // Queues Names
     static final String INPUT_QUEUE_NAME = "inputQueue";
+    static final String INPUT_THREAD_QUEUE_NAME = "inputThreadsQueue";
     static final String INPUT_WORKERS_QUEUE_NAME = "inputWorkerQueue";
     static final String OUTPUT_WORKERS_QUEUE_NAME = "outputWorkerQueue";
     static final String OUTPUT_QUEUE_NAME = "outputQueue";
 
     // global waiting time
-    static final int sleep = 1000;
+    static final int sleep = 3000;
+    static final int sleepFetchingFromWorkers = 250;
+    static final int localAppWaiting = 2000;
 }
