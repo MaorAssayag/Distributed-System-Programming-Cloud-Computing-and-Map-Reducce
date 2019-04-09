@@ -113,11 +113,11 @@ Specifically, we will have the following messages:
 
 In order to allow optimal running times and supports better scalability we seperate the messages to 5 main queues as follow :  
 
-* queue from LocalApp to ManagerApp - *Header.INPUT_QUEUE_NAME - inputQueue
-* queue from Manager to Manager threads - *Header.INPUT_THREAD_QUEUE_NAME - inputThreadsQueue
-* queue from Manager to Workers - *Header.INPUT_WORKERS_QUEUE_NAME - inputWorkerQueue
-* queue from Workers to Manager - *Header.OUTPUT_WORKERS_QUEUE_NAME - outputWorkerQueue
-* queue from Manager to LocalApp - *Header.OUTPUT_QUEUE_NAME - outputQueue
+* queue from LocalApp to ManagerApp - *Header.INPUT_QUEUE_NAME* - *inputQueue*
+* queue from Manager to Manager threads - *Header.INPUT_THREAD_QUEUE_NAME - *inputThreadsQueue*
+* queue from Manager to Workers - *Header.INPUT_WORKERS_QUEUE_NAME* - *inputWorkerQueue*
+* queue from Workers to Manager - *Header.OUTPUT_WORKERS_QUEUE_NAME* - *outputWorkerQueue*
+* queue from Manager to LocalApp - *Header.OUTPUT_QUEUE_NAME* - *outputQueue*
 
 ### System Summary
 
