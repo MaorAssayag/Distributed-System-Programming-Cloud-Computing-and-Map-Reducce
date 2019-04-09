@@ -53,6 +53,7 @@ The application resides on a local (non-cloud) machine. Once started, it reads t
 * Checks if a Manager node is active on the EC2 cloud. If it is not, the application will start the manager node.
 * Uploads the file to S3.
 * Sends a message to an SQS queue, stating the location of the file on S3
+* Here we are blocking the LocalApp process with the next step (the Local App doesnt handles threads).
 * Checks an SQS queue for a message indicating the process is done and the response (the summary file) is available on S3.
 * Downloads the summary file from S3, and create an html file representing the results.
 * Sends a termination message to the Manager if it was supplied as one of its input arguments.   
@@ -63,6 +64,7 @@ IMPORTANT: There can be more than one than one local application running at the 
 The manager process resides on an EC2 node. It checks a special SQS queue for messages from local applications. Once it receives a message it:
 
 * If the message is that of a new task it:
+  * Send a request from *ThreadPoolExecuter* that handles up to 10 threads (we decided 10 is reasonable due to the free-tire EC2 services  we are using) to run the following operation on a thread : 
   * Downloads the input file from S3.
   * Creates an SQS message for each URL in the input file together with the operation that should be performed on it.
   * Checks the SQS message count and starts Worker processes (nodes) accordingly.
@@ -75,6 +77,7 @@ Note that while the manager creates a node for every n messages, it does not del
   * Does not accept any more input files from local applications.
   * Waits for all the workers to finish their job, and then terminates them.
   * Creates response messages for the jobs, if needed.
+  * Stops the Thread Executer
   * Terminates. 
 
 IMPORTANT: the manager must process requests from local applications simultaneously; meaning, it must not handle each request at a time, but rather work on all requests in parallel.
@@ -108,7 +111,13 @@ Specifically, we will have the following messages:
   * done PDF task message from a worker to the manager (S3 location of the output file, the operation performed, and the URL of the PDF file).
   * done task message from the manager to the application (S3 location of the output summary file). 
 
-It is up to you to decide how many queues you want (you can have different queues for different tasks, or one queue, whatever you find most convenient). Be ready to explain your choices. 
+In order to allow optimal running times and supports better scalability we seperate the messages to 5 main queues as follow :  
+
+* queue from LocalApp to ManagerApp - *Header.INPUT_QUEUE_NAME - inputQueue
+* queue from Manager to Manager threads - *Header.INPUT_THREAD_QUEUE_NAME - inputThreadsQueue
+* queue from Manager to Workers - *Header.INPUT_WORKERS_QUEUE_NAME - inputWorkerQueue
+* queue from Workers to Manager - *Header.OUTPUT_WORKERS_QUEUE_NAME - outputWorkerQueue
+* queue from Manager to LocalApp - *Header.OUTPUT_QUEUE_NAME - outputQueue
 
 ### System Summary
 
