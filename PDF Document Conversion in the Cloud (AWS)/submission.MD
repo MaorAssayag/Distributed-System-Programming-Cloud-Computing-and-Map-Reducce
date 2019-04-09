@@ -1,7 +1,7 @@
 <img src="http://codigodelsur.com/wp-content/uploads/2016/02/AmazonWebservices_Logo.svg_.png" width="250"><img src="https://acrobat.adobe.com/content/dam/doc-cloud/images/acrobat/how-to/create-pdf/adc-fd-create-marquee-1440x200-en.jpg" width="160">  
 
 # Distributed System Programming Cloud Computing and Map Reducce  
-## PDF Document Conversion in the Cloud (AWS)  
+## Assignment 1 - PDF Document Conversion in the Cloud (AWS)  
 
 
 ### Authors
@@ -15,7 +15,7 @@ Computer Engineer, Ben-gurion University, Israel
 ### General
 In this assignment we will code a real-world application to distributively process a list of PDF files, perform some operations on them,and display the result on a web page (HTML file).  
 
-**Architecture** and the assignment requirements are fully described in the github page
+**System architecture** and the assignment requirements are fully described in the github page
 (its compose mainly from the assignment official page and from our additions) -  
 
 https://github.com/MaorAssayag/Distributed-System-Programming-Cloud-Computing-and-Map-Reducce/tree/master/PDF%20Document%20Conversion%20in%20the%20Cloud%20(AWS)  
@@ -117,12 +117,29 @@ Its important to note that this system architecture is all based on distributed 
 
 #
 ### Termination process
+The *local app* can send with the request for a new input-file a terminate message to the *Manager*.  
 
+Once the *Manager* send the new request to be handle in the thread pool, eventually a thread will start handling this request.  
+
+Once done, the thread will stop the *Manager* for continue receiving new requests from *Local Apps*, will terminate the *thread pool executor* and start terminating all the *Worker instances*.  
+
+This thread will not finish until he gets a confirmation from AWS services about all the instances status.  
+
+After a confirmation will be received the thread (in the name of the Manager main thread) will upload the *Manager Logger* file to S3 and will send a confirmation SQS message to the *Local App* that made the request to terminate.
+
+Once the *Local App* (waiting for answear from the *Manager* to be terminated) received the terminate ACK message the *Local App* will terminate the *Manager* instance.
+
+#
+### Distribution
+#### Diterbuted work among Workers
+
+#### Blocking sections
+
+    Are all your workers working hard? Or some are slacking? Why?
+    Is your manager doing more work than he's supposed to? Have you made sure each part of your system has properly defined tasks? Did you mix their tasks? Don't!
+    Lastly, are you sure you understand what distributed means? Is there anything in your system awaiting another? 
 
 #
 ### How to run the program
 
-    Did you manage the termination process? Be sure all is closed once requested!
-    Are all your workers working hard? Or some are slacking? Why?
-    Is your manager doing more work than he's supposed to? Have you made sure each part of your system has properly defined tasks? Did you mix their tasks? Don't!
-    Lastly, are you sure you understand what distributed means? Is there anything in your system awaiting another? 
+
