@@ -1,4 +1,4 @@
-<img src="http://codigodelsur.com/wp-content/uploads/2016/02/AmazonWebservices_Logo.svg_.png" width="250"><img src="https://acrobat.adobe.com/content/dam/doc-cloud/images/acrobat/how-to/create-pdf/adc-fd-create-marquee-1440x200-en.jpg" width="130">  
+<img src="http://codigodelsur.com/wp-content/uploads/2016/02/AmazonWebservices_Logo.svg_.png" width="250"><img src="https://acrobat.adobe.com/content/dam/doc-cloud/images/acrobat/how-to/create-pdf/adc-fd-create-marquee-1440x200-en.jpg" width="160">  
 
 # Distributed System Programming Cloud Computing and Map Reducce  
 ## PDF Document Conversion in the Cloud (AWS)  
@@ -105,16 +105,24 @@ All stages in the Manager is been logged in a Logger file which is uploaded to t
 
 #
 ### Threads
+When we looking at improve scalability and timing, we need to think about integrate threads in our application mainly at the Manager code, which containing the bottleneck of our application.  
+
+The Manager needs to received new requests from Local Apps **and** handle the collecting of Workers respons to upload final-result files for each LocalApp requests.  
+
+To achieve this in *ManagerApp.java* a ThreadPoolExceture handles up to *10* threads to serve new requests from LocalApp's (while the main thread listen to new requests and for each one sending them to the excetuer to be serve when possible by the thread pool). We have already elaborate as required on why *10* threads above.  
+
+We tested the integrity of the system concurrency by running several local applications (each one for a different *input file*) and montoring the Manager Logger, SQS queues, S3 buckets & EC2 instances online.  
+
+Its important to note that this system architecture is all based on distributed system programming and cloud computing utilizing AWS services.
+
+#
+### Termination process
 
 
 #
 ### How to run the program
-    
-    Threads in your application, when is it a good idea? When is it bad? Invest time to think about threads in your application!
-    Did you run more than one client at the same time? Be sure they work properly, and finish properly, and your results are correct.
-    Do you understand how the system works? Do a full run using pen and paper, draw the different parts and the communication that happens between them.
+
     Did you manage the termination process? Be sure all is closed once requested!
-    Did you take in mind the system limitations that we are using? Be sure to use it to its fullest!
     Are all your workers working hard? Or some are slacking? Why?
     Is your manager doing more work than he's supposed to? Have you made sure each part of your system has properly defined tasks? Did you mix their tasks? Don't!
     Lastly, are you sure you understand what distributed means? Is there anything in your system awaiting another? 
