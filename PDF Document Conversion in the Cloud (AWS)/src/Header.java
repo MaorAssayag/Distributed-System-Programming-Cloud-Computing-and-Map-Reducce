@@ -1,5 +1,5 @@
 /**
- * Distriduted System Programming : Cloud Computing and Map-Reducce1 - 2019/Spring
+ * Distributed System Programming : Cloud Computing and Map-Reducce1 - 2019/Spring
  * Assignment 1
  *
  * DSP Local Application
@@ -35,7 +35,6 @@ public class Header {
     static final String IMAGE_NAME = "temp";
     static final String TEXT_NAME = "temp";
     static final String HTML_NAME = "tmep";
-    static final String RESULT_NAME = "result";
     static final String ENCODING = "UTF-8";
 
     // Strings for SQS messages
@@ -57,7 +56,7 @@ public class Header {
     static final String OUTPUT_QUEUE_NAME = "outputQueue";
 
     // global waiting time
-    static final int sleep = 3000;
+    static final int sleep = 2000;
     static final int sleepFetchingFromWorkers = 250;
     static final int localAppWaiting = 2000;
 }

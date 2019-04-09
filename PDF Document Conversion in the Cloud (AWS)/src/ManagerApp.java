@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 /**
- * Distriduted System Programming : Cloud Computing and Map-Reducce1 - 2019/Spring
+ * Distributed System Programming : Cloud Computing and Map-Reducce1 - 2019/Spring
  * Assignment 1
  *
  * DSP Local Application
@@ -26,8 +26,7 @@ import java.util.logging.SimpleFormatter;
  * Creators : Maor Assayag
  *            Refahel Shetrit
  *
- * ManagerApp class - The code that will run by the Manager instance on EC2
- * for now only creating a simple bucket for example
+ * ManagerApp class
  */
 public class ManagerApp {
 
@@ -68,6 +67,7 @@ public class ManagerApp {
                 }
                 logger.info(" General|    Attaching a thread to handle new task request from a Local App \n");
                 message = messages.get(0);
+
                 // transfer this message from the input queue to the threads queue
                 myAWS.deleteSQSmessage(myAWSsqsURL.get(Header.INPUT_QUEUE_NAME), message.getReceiptHandle());
                 myAWS.sendSQSmessage(myAWSsqsURL.get(Header.INPUT_THREAD_QUEUE_NAME), message.getBody());
@@ -119,6 +119,7 @@ public class ManagerApp {
                                         Header.WORKER_SCRIPT,
                                         Header.INSTANCE_WORKER_KEY_NAME,
                                         TAG_WORKER));
+                                currWorkers = checkWorkers(myAWS);
                             }
                             logger.info("             Thread handling this task\n");
                             logger.info(" Stage 4|    Analyzing the following input file : " + parsedMessage[3] + "\n");
@@ -132,21 +133,41 @@ public class ManagerApp {
                             myAWS.deleteSQSmessage(myAWSsqsURL.get(Header.INPUT_THREAD_QUEUE_NAME), messageCurr.getReceiptHandle());
                             logger.info(" Stage 6|    Busy-wait to new messages..." + "\n");
 
-                            // TERMINATE
+                            // Check if terminate message has been received
                             if (Boolean.parseBoolean(parsedMessage[1])){
                                 logger.info(" Stage 6|    Terminate request received, terminating "+ instancesId.size() + " workers instances..."  + "\n");
 
-                                // terminate all workers instances start by this Manager
+                                // Terminate all workers instances start by this Manager
                                 myAWS.terminateEC2instance(instancesId);
 
-                                // send terminate message ack to the local app that asked it
-                                myAWS.sendSQSmessage(myAWSsqsURL.get(Header.OUTPUT_QUEUE_NAME), Header.TERMINATED_STRING + parsedMessage[0].substring(0,12));
-
-                                // stop retrieving messages from the input queue, and wait for stopping the running
+                                // Stop retrieving messages from the input queue, and wait for stopping the running
                                 keepAlive = false;
 
-                                // stop the thread pool executor
+                                // Stop the thread pool executor
                                 executor.shutdown();
+
+                                // Terminate the worker instances
+                                try {Thread.sleep(500);}
+                                catch (InterruptedException e){logger.warning(e.toString());}
+
+                                while (checkWorkers(myAWS) > 0){
+                                    instancesId.addAll(myAWS.getEC2instancesByTagState(TAG_WORKER, "running"));
+                                    instancesId.addAll(myAWS.getEC2instancesByTagState(TAG_WORKER, "pending"));
+                                    myAWS.terminateEC2instance(instancesId);
+
+                                    try {Thread.sleep(Header.sleep);}
+                                    catch (InterruptedException e){logger.warning(e.toString());}
+                                }
+
+                                // Upload the Manager Logger file
+                                try{
+                                    myAWS.mUploadS3(Header.PRE_UPLOAD_BUCKET_NAME, null, Header.LOGGER_FILE_NAME, new File("ManagerLogger.txt"));
+                                }catch (Exception e){
+                                    System.out.println("Error while uploading Manager logger + " + e.toString());
+                                }
+
+                                // Send terminate message ack to the local app that asked it
+                                myAWS.sendSQSmessage(myAWSsqsURL.get(Header.OUTPUT_QUEUE_NAME), Header.TERMINATED_STRING + parsedMessage[0].substring(0,12));
                             }
 
                         }catch (AmazonServiceException ase) {
@@ -166,6 +187,14 @@ public class ManagerApp {
 
                         } catch (Exception e){
                             logger.warning(e.toString());
+                        } finally {
+                            // if the Manager has been terminated before getting to this section this file will be
+                            // uploaded in the thread that got the termination message
+                            try{
+                                myAWS.mUploadS3(Header.PRE_UPLOAD_BUCKET_NAME, null, Header.LOGGER_FILE_NAME, new File("ManagerLogger.txt"));
+                            }catch (Exception e){
+                                System.out.println("Error while uploading Manager logger + " + e.toString());
+                            }
                         }
                     }
                 };
@@ -193,26 +222,46 @@ public class ManagerApp {
         } catch (Exception e){
             logger.warning(e.toString());
 
-        } finally {
-            try{
-                myAWS.mUploadS3(Header.PRE_UPLOAD_BUCKET_NAME, null, Header.LOGGER_FILE_NAME, new File("ManagerLogger.txt"));
-            }catch (Exception e){
-                System.out.println("Error while uploading Manager logger + " + e.toString());
-            }
         }
     }
 
+    /**
+     * initializeAllQueues - initialize the required queue for the Manager operation
+     * @param myAWS mAWS amazon web service object with EC2, S3 & SQS
+     */
     private static void initializeAllQueues(mAWS myAWS) {
         ArrayList<Map.Entry<String, String>> queues = new ArrayList<Map.Entry<String,String>>();
+        // queue from LocalApp to ManagerApp
         queues.add(new AbstractMap.SimpleEntry<String, String>(Header.INPUT_QUEUE_NAME, "0"));
+
+        // queue from Manager to Manager threads
         queues.add(new AbstractMap.SimpleEntry<String, String>(Header.INPUT_THREAD_QUEUE_NAME, "0"));
+
+        // queue from Manager to Workers
         queues.add(new AbstractMap.SimpleEntry<String, String>(Header.INPUT_WORKERS_QUEUE_NAME, "0"));
+
+        // queue from Workers to Manager
         queues.add(new AbstractMap.SimpleEntry<String, String>(Header.OUTPUT_WORKERS_QUEUE_NAME, "0"));
+
+        // queue from Manager to LocalApp
         queues.add(new AbstractMap.SimpleEntry<String, String>(Header.OUTPUT_QUEUE_NAME, "0"));
+
         myAWSsqsURL = myAWS.initSQSqueues(queues);
     }
 
-    private static String analyzeTextFile(mAWS myAWS, String shortLocalAppID, String inputFileURL){
+    /**
+     * analyzeTextFile - Manager creates an SQS message for each URL and operation from the input list.
+     * Then, the thread that handles this task is waiting for the workers to response with the results
+     * of those requests
+     * ( Manager reads all Workers messages from SQS and creates one summary file,
+     * once all URLs in the input file have been processed).
+     *
+     * @param myAWS mAWS amazon web service object with EC2, S3 & SQS
+     * @param shortLocalAppID the LocalApp ID that request this input-file
+     * @param inputFileURL the input-file URL in S3 LocalApp bucket
+     * @return outputURL, the result-file URL on S3 LocalApp bucket
+     */
+    private static String analyzeTextFile(final mAWS myAWS, String shortLocalAppID, String inputFileURL){
         String outputURL = null;
         java.util.logging.Logger
                 .getLogger("org.apache.pdfbox").setLevel(java.util.logging.Level.SEVERE);
@@ -231,7 +280,7 @@ public class ManagerApp {
             String inputLine;
             int count = 0;
             while ((inputLine = bufferedReader.readLine()) != null){
-                logger.info("*");
+                logger.info(""+count);
                 myAWS.sendSQSmessage(myAWSsqsURL.get(Header.INPUT_WORKERS_QUEUE_NAME), shortLocalAppID  + "\t" + inputLine);
                 count++;
             }
@@ -242,6 +291,29 @@ public class ManagerApp {
             PrintWriter out = new PrintWriter(file, "UTF-8");
             List<Message> currMessages;
             logger.info("\n             Fetching messages from workers \n             ");
+
+            // Schedule checking for sudden termination
+            new java.util.Timer().schedule(new TimerTask(){
+                @Override
+                public void run() {
+                    logger.info("Schedule checking for sudden termination");
+                    int curr = checkWorkers(myAWS);
+                    if (curr < currWorkers){
+                        logger.info("             Adding " + (currWorkers-curr) + " instances of Workers to total of " + currWorkers +" Workers \n");
+                        instancesId.addAll(myAWS.initEC2instance(Header.imageID,
+                                1,
+                                (currWorkers-curr),
+                                InstanceType.T2Micro.toString(),
+                                Header.PRE_UPLOAD_BUCKET_NAME,
+                                Header.WORKER_SCRIPT,
+                                Header.INSTANCE_WORKER_KEY_NAME,
+                                TAG_WORKER));
+                        currWorkers = checkWorkers(myAWS);
+                    }
+                    // after *num_of_lines x 1s / num_of_workers* we are checking if there is still active worker to detect sudden termination of nodes.
+                }
+            },1000*(count+1)/(currWorkers+1),1000*(count+1)/(currWorkers+1));
+
 
             // Waiting for workers to process all the requests
             while(count > 0){
@@ -255,7 +327,7 @@ public class ManagerApp {
 
                     // decrease the count - when we done processing enough messages from the workers we exit
                     count--;
-                    logger.info(".");
+                    logger.info(""+count);
                 }
                 // "busy"-wait for 0.5 second while workers keep completing other requests
                 try {Thread.sleep(Header.sleepFetchingFromWorkers);}
@@ -275,19 +347,23 @@ public class ManagerApp {
     }
 
     /**
-     * checkWorkers
+     * checkWorkers - check how many instances of workers is running\pending, used to make sure
+     * how much workers nodes currently/soon will operate on new requests
+     * @param myAWS mAWS amazon web service object with EC2, S3 & SQS
      * @return instanceID if manager found, else null
      */
     private static int checkWorkers(mAWS myAWS) {
-        return myAWS.getEC2instancesByTagState(TAG_WORKER, "running") +
-                myAWS.getEC2instancesByTagState(TAG_WORKER, "pending");
+        return myAWS.getNumEC2instancesByTagState(TAG_WORKER, "running") +
+                myAWS.getNumEC2instancesByTagState(TAG_WORKER, "pending");
     }
 
     /**
+     * get1MessageFromSQS - get 1 message from a queue with visibility Time-Out
      *
-     * @param myAWS
-     * @param queueURL
-     * @return
+     * @param myAWS mAWS amazon web service object with EC2, S3 & SQS
+     * @param queueURL which queue we want to read from
+     * @param visibilityTimeOut how much time in seconds the message should be invisible in the queue
+     * @return the message
      */
     private static List<Message> get1MessageFromSQS(mAWS myAWS, String queueURL, int visibilityTimeOut) {
         ReceiveMessageRequest receiveMessageRequest = new ReceiveMessageRequest(queueURL);
@@ -301,8 +377,15 @@ public class ManagerApp {
         return myAWS.receiveSQSmessage(receiveMessageRequest);
     }
 
-    private static void initLogger(String shortLocalAppID) throws IOException{
-        FileHandler fileHandler = new FileHandler(shortLocalAppID + ".txt");
+    /**
+     * initLogger - init logger file of the Manager operation. this file will be uploaded to the pre-upload
+     * bucket on S3 when this ManagerAPP is terminate.
+     *
+     * @param loggerName - just the name of the file
+     * @throws IOException
+     */
+    private static void initLogger(String loggerName) throws IOException{
+        FileHandler fileHandler = new FileHandler(loggerName + ".txt");
         fileHandler.setFormatter(new SimpleFormatter());
         logger.setLevel(Level.ALL);
         logger.addHandler(fileHandler);

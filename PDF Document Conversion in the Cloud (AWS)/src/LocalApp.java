@@ -13,7 +13,7 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.sqs.model.Message;
 
 /**
- * Distriduted System Programming : Cloud Computing and Map-Reducce1 - 2019/Spring
+ * Distributed System Programming : Cloud Computing and Map-Reducce1 - 2019/Spring
  * Assignment 1
  *
  * DSP Local Application
@@ -23,7 +23,7 @@ import com.amazonaws.services.sqs.model.Message;
  *            Refahel Shetrit
  *
  * LocalApp class - represent the Local Application
- * For now preUpload class need to be run before this file (to upload jars&scripts).
+ * overwriteScript, overwriteJars to upload new jars\scripts to pre-upload bucket.
  */
 public class LocalApp {
 
@@ -174,7 +174,9 @@ public class LocalApp {
      * a baseline level of CPU performance with the ability to burst above the baseline.
      *
      * Image ID : ami-0080e4c5bc078760e - Linux 64 bit with full support of java
-     *
+     * @param myAWS mAWS object
+     * @param overwriteJars doest we want to overwrite the jars on pre-upload bucket ?
+     * @param overwriteScript doest we want to overwrite the scripts on pre-upload bucket ?
      * @return the id of a manager instance that has been created
      */
     private static String startManager(mAWS myAWS, boolean overwriteScript, boolean overwriteJars) {
@@ -188,25 +190,29 @@ public class LocalApp {
 
     /**
      * checkManager - method used to determined if the local app needs to start a new Manager
-     * instance in aws.
+     * instance in aws. Checking if a Manager instance is running or stopped.
+     *
+     * @param myAWS mAWS amazon web service object with EC2, S3 & SQS
      * @return instanceID if manager found, else null
      */
-    private static String[] checkManager(mAWS aws) {
+    private static String[] checkManager(mAWS myAWS) {
         String[] results = new String[2];
-        results[0] = aws.getEC2instanceID(TAG_MANAGER, "running");
-        results[1] = aws.getEC2instanceID(TAG_MANAGER, "stopped");
+        results[0] = myAWS.getEC2instanceID(TAG_MANAGER, "running");
+        results[1] = myAWS.getEC2instanceID(TAG_MANAGER, "stopped");
         return results;
     }
 
     /**
      * uploadFileToS3 - method that uploads the input file from the user to be read, distributed &
      * executed by a running manager.
+     *
      * @param inputFileName location of the file to upload to S3
-     * @param aws amazon web service object with EC2 & S3
+     * @param myAWS mAWS amazon web service object with EC2, S3 & SQS
+     * @param folder which folder in local app bucket
      * @return path (url) of the uploaded file in S3 - a confirmation of successful upload
      */
-    private static String uploadFileToS3(mAWS aws, String inputFileName, String folder) {
-        return aws.mUploadS3(Header.APP_BUCKET_NAME + shortLocalAppID, folder, Header.INPUT_FILE_NAME, new File(inputFileName));
+    private static String uploadFileToS3(mAWS myAWS, String inputFileName, String folder) {
+        return myAWS.mUploadS3(Header.APP_BUCKET_NAME + shortLocalAppID, folder, Header.INPUT_FILE_NAME, new File(inputFileName));
     }
 
     /**
@@ -215,7 +221,7 @@ public class LocalApp {
      * The method initialize a Queue of messages (if needed) and send a message with the input file's URL and
      * information about the number of workers, LocalAppID etc.
      *
-     * @param myAWS amazon web service object with EC2 & S3
+     * @param myAWS mAWS amazon web service object with EC2, S3 & SQS
      * @param msg the message to be sent
      */
     private static void send2SQS(mAWS myAWS, String msg) {
@@ -227,26 +233,28 @@ public class LocalApp {
      * waitForAnswer - method thats check the SQS in the cloud until there's a message
      * associate with the LocalAppID (meaning the Manager has responded and finished/stop
      * processing the requested operation)
-     *  Blocking-IO method that sleeps for 'sleep' ms
-     * @param aws amazon web service object with EC2 & S3
+     * Blocking-IO method that sleeps for 'sleep' ms
+     *
+     * @param myAWS mAWS amazon web service object with EC2, S3 & SQS
      * @param key UUID key associate with this instance of Local application (global LocalAppId)
      * @param sleep the amount of time in ms between searching for answer in the SQS
      */
-    private static String waitForAnswer(mAWS aws, String key, int sleep) {
+    private static String waitForAnswer(mAWS myAWS, String key, int sleep) {
         List<Message> messages;
         String resultURL = null;
-        String queueUrl = aws.initSQSqueues(Header.OUTPUT_QUEUE_NAME, "0");
+        String queueUrl = myAWS.initSQSqueues(Header.OUTPUT_QUEUE_NAME, "0");
 
         while(true) {
-            messages = aws.receiveSQSmessage(queueUrl); // Receive List of all messages in queue
+            messages = myAWS.receiveSQSmessage(queueUrl); // Receive List of all messages in queue
             for (Message message : messages) {
                 String[] msg = message.getBody().split(" ");
                 if(msg[0].equals(key)) {
                     String myMessage = message.getReceiptHandle();
+                    // the terminate message have only msg[0]
                     if (msg.length > 1){
                         resultURL = msg[1];
                     }
-                    aws.deleteSQSmessage(Header.OUTPUT_QUEUE_NAME, myMessage); // Delete the message from the queue
+                    myAWS.deleteSQSmessage(Header.OUTPUT_QUEUE_NAME, myMessage); // Delete the message from the queue
                     return resultURL;
                 }
             }
@@ -262,20 +270,25 @@ public class LocalApp {
     /**
      * downloadResult - method that downloads the summary file from S3 for creating
      * an html file representing the results.
-     * @param aws amazon web service object with EC2 & S3
+     *
+     * @param myAWS mAWS amazon web service object with EC2, S3 & SQS
+     * @param resultsURL the returned URL from the Manager
+     * @param outputFileName the local result HTML
      * @return result - a list of lines(String) from the format:
      *                  '<operation>: input file output file'
      */
-    private static String downloadResult(mAWS aws, String resultsURL, String outputFileName) {
+    private static String downloadResult(mAWS myAWS, String resultsURL, String outputFileName) {
         String outputFilePath = null;
         try {
+            // get the result file from S3
             URI fileToBeDownloaded = new URI(resultsURL);
             AmazonS3URI s3URI = new AmazonS3URI(fileToBeDownloaded);
-            S3Object resultFile = aws.mDownloadS3file(s3URI.getBucket(), s3URI.getKey());
+            S3Object resultFile = myAWS.mDownloadS3file(s3URI.getBucket(), s3URI.getKey());
             InputStream inputStream  = resultFile.getObjectContent();
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
             String line;
 
+            // create the HTML file
             PrintWriter out = new PrintWriter(outputFileName + ".HTML", "UTF-8");
             out.println("<html>\n");
             out.println("<pre style=\"float: top;\" contenteditable=\"false\">_____/\\\\\\\\\\\\\\\\\\______/\\\\\\______________/\\\\\\______/\\\\\\\\\\\\\\\\\\\\\\___\n" +
@@ -311,15 +324,25 @@ public class LocalApp {
 
     /**
      * endManager - terminate the Manager Instance on EC2 service
+     *
      * @param myAWS mAWS amazon web service object with EC2, S3 & SQS
      * @param managerID - EC2 Manger instance ID
      * @param sleep the amount of time in ms between searching for answer in the SQS
      */
     private static void endManager(mAWS myAWS, String managerID, int sleep) {
+        // wait for termination message from the Manager
         waitForAnswer(myAWS, Header.TERMINATED_STRING + shortLocalAppID, sleep);
+
+        // terminate the manager
         myAWS.terminateEC2instance(managerID);
     }
 
+    /**
+     * uploadScripts - upload the scripts to the pre-upload bucket on S3
+     *
+     * @param myAWS mAWS amazon web service object with EC2, S3 & SQS
+     * @param overwrite doest we want to overwrite the scripts on pre-upload bucket ?
+     */
     private static void uploadScripts(mAWS myAWS, boolean overwrite) {
         System.out.println("\n Stage 2|    Uploading files (scripts & jars) to the general Bucket..." + "\n");
 
@@ -339,6 +362,11 @@ public class LocalApp {
         }
     }
 
+    /**
+     * uploadJars - upload the jars of Worker.java & ManagerApp.java to the pre-upload bucket on S3
+     * @param myAWS mAWS amazon web service object with EC2, S3 & SQS
+     * @param overwrite doest we want to overwrite the jars on pre-upload bucket ?
+     */
     private static void uploadJars(mAWS myAWS, boolean overwrite) {
         if (!myAWS.doesFileExist(Header.PRE_UPLOAD_BUCKET_NAME, Header.MANAGER_JAR) || overwrite){
 

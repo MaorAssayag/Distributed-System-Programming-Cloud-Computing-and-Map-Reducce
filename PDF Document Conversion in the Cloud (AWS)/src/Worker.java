@@ -11,7 +11,7 @@ import java.net.URL;
 import java.util.*;
 
 /**
- * Distriduted System Programming : Cloud Computing and Map-Reducce1 - 2019/Spring
+ * Distributed System Programming : Cloud Computing and Map-Reducce1 - 2019/Spring
  * Assignment 1
  *
  * DSP Local Application
@@ -20,8 +20,7 @@ import java.util.*;
  * Creators : Maor Assayag
  *            Refahel Shetrit
  *
- * ManagerApp class - The code that will run by the Manager instance on EC2
- * for now only creating a simple bucket for example
+ * Worker class
  */
 public class Worker {
     private static int index;
@@ -97,21 +96,28 @@ public class Worker {
     }
 
     /**
-     *
-     * @param myAWS
+     * initializeAllQueues - initialize the required queue for the Manager operation
+     * @param myAWS mAWS amazon web service object with EC2, S3 & SQS
      */
     private static void initializeAllQueues(mAWS myAWS) {
         ArrayList<Map.Entry<String, String>> queues = new ArrayList<Map.Entry<String,String>>();
+
+        // queue from Manager to Workers
         queues.add(new AbstractMap.SimpleEntry<String, String>(Header.INPUT_WORKERS_QUEUE_NAME, "0"));
+
+        // queue from Workers to Manager
         queues.add(new AbstractMap.SimpleEntry<String, String>(Header.OUTPUT_WORKERS_QUEUE_NAME, "0"));
+
         myAWSsqsURL = myAWS.initSQSqueues(queues);
     }
 
     /**
+     * analyzeMessage - parse the request from the Manager and return the URL reulst file for this
+     * request
      *
-     * @param myAWS
-     * @param currMessage
-     * @return
+     * @param myAWS mAWS amazon web service object with EC2, S3 & SQS
+     * @param currMessage current request from the Manager
+     * @return URL of the file in S3 LocalApp bucket
      */
     private static String analyzeMessage(mAWS myAWS, Message currMessage){
         String outputMessage = null;
@@ -137,12 +143,13 @@ public class Worker {
     }
 
     /**
+     * convertPDF - convert the PDF according to the requested operation
      *
-     * @param myAWS
-     * @param shortLocalAppID
-     * @param operation
-     * @param pdfURL
-     * @return
+     * @param myAWS mAWS amazon web service object with EC2, S3 & SQS
+     * @param shortLocalAppID the LocalApp ID that this request belongs to
+     * @param operation ToImage / ToText / ToHTML the first page of the PDF
+     * @param pdfURL the PDF URL
+     * @return the URL of the results
      */
     private static String convertPDF(mAWS myAWS, String shortLocalAppID, String operation, String pdfURL) {
         String outputLine = operation + ":" + "\t" + pdfURL + "\t";
@@ -160,7 +167,7 @@ public class Worker {
                     String firstPage = textStripper.getText(pddDocument);
 
                     // Create new file
-                    File file = new File("temp" + ".txt");
+                    File file = new File(Header.TEXT_NAME + ".txt");
                     PrintWriter out = new PrintWriter(file, "UTF-8");
                     out.println(firstPage);
 
@@ -222,10 +229,11 @@ public class Worker {
     }
 
     /**
+     * get1MessageFromSQS - get 1 message from a queue with visibility Time-Out 10s
      *
-     * @param myAWS
-     * @param queueURL
-     * @return
+     * @param myAWS mAWS amazon web service object with EC2, S3 & SQS
+     * @param queueURL which queue we want to read from
+     * @return the message
      */
     private static List<Message> get1MessageFromSQS(mAWS myAWS, String queueURL) {
         ReceiveMessageRequest receiveMessageRequest = new ReceiveMessageRequest(queueURL);
