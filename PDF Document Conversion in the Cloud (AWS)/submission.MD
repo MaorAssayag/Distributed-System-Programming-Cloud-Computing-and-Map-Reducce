@@ -8,6 +8,7 @@ Computer Engineer, Ben-gurion University, Israel
 *Refhael Shetrit* - ID 204654891  
 Computer Engineer, Ben-gurion University, Israel
 
+#
 ### General
 In this assignment we will code a real-world application to distributively process a list of PDF files, perform some operations on them,and display the result on a web page (HTML file).  
 
@@ -20,6 +21,7 @@ and this file in more nice way to read it (.MD) -
 
 https://github.com/MaorAssayag/Distributed-System-Programming-Cloud-Computing-and-Map-Reducce/blob/master/PDF%20Document%20Conversion%20in%20the%20Cloud%20(AWS)/submission.MD
 
+#
 ### Security
 Its important to diffrincate between Local Apps running locally and apps runing on cloud instaces.  
 
@@ -39,6 +41,7 @@ With this role we can initlaize new EC2 instance with specific permissions witho
 
 In the IAM role we can detrmine that only LocalApp from our user (using the KeyPair) can use this role Name and grant permissions to new instaces on EC2 (e.g. permissions to the Manager to Fully accessed SQS, EC2 and S3).
 
+#
 ### S3 buckets
 To be able to easily distinguish Local App requests we are creating for each LocalApp a new bucket in the following format :
 *dsp-192-local-app- + (first 12 digits of random 64-bit UUID)*  
@@ -48,6 +51,7 @@ Each LocalApp bucket contains *input-folder* (the input file from the user), *ou
 
 In addition, there is a constant bucket named *mr-dsp-192-pre-upload-jars-scripts* that contains the Worker & Manager Scripts & Jars files and the ManagerApp Logger file if the Manager has been terminated (by error / LocalApp request) named *ManagerLogger.txt*.
 
+#
 ### Scalability
 Currently all instaces are running on *T2.micro* type which is the free-tire that amazon provides.  
 
@@ -64,11 +68,24 @@ In addition, in *ManagerApp.java* the ThreadPoolExceture handles up to *10* thre
 
 We limit the thread pool to 10 due to low compute power of *T2.micro* and the fact that each task as serving a new LocalApp request consdider to take some time (an acceptable assumption when it comes to IO (W/R files) inquiries and network (Upload/Download files/messages) inquiries).
 
+#
+### Persistence
+We design our code to handle all fail-cases in the right manner and situation, to keep the system running until something mandatory to stop occurs.  
 
+With each new LocalApp request to the Manager the current Active workers nodes are updated globaly (to all the threads that handles requests - needed for sudden termination of workers checking).  
+We make sure to have an updated view on how many workers still up when the user required *x* amount of workers.  
 
+If a worker suddnely dies without sendind to the *output worker queue* the results to the request he pulled, the request will simply become visible after some time-out will ran out (currently 10s) to other workers that still running.  
+
+If a worker failed due to communiction problems (which did not arise from the content of the request itself) - the worker will not delete the request to mark it as done, and will keep trying to pulling requests from the *input wokeres queue*.  
+
+The Manager is waiting to get responses for each requests from the *input-file*. To supports scalabilities we don't limit the amount of time the Manager is waiting for all the respones, but after *num_of_lines x 1s / num_of_workers* we are checking if there is still active worker to detecet sudden termination of nodes.  
+
+All stages in the Manager is been logged in a Logger file which is uploaded to the *mr-dsp-192-pre-upload-jars-scripts* bucket as *ManagerLogger.txt* file when the Manager is exsiting (due to Error/LocalApp request from the user) to furter review if required.
+
+#
 ### How to run the program
-
-    What about persistence? What if a node dies? What if a node stalls for a while? Have you taken care of all possible outcomes in the system? Think of more possible issues that might arise from failures. What did you do to solve it? What about broken communications? Be sure to handle all fail-cases!
+    
     Threads in your application, when is it a good idea? When is it bad? Invest time to think about threads in your application!
     Did you run more than one client at the same time? Be sure they work properly, and finish properly, and your results are correct.
     Do you understand how the system works? Do a full run using pen and paper, draw the different parts and the communication that happens between them.
