@@ -24,6 +24,8 @@ and this file in more nice way to read it (.MD) -
 
 https://github.com/MaorAssayag/Distributed-System-Programming-Cloud-Computing-and-Map-Reducce/blob/master/PDF%20Document%20Conversion%20in%20the%20Cloud%20(AWS)/submission.MD
 
+In this doucment we will elaborate on technical matters that we thought should be emphasized and on the substantive questions that were taken into account during the planning & design process.  
+
 #
 ### Security
 Its important to diffrincate between Local Apps running locally and apps runing on cloud instaces.  
@@ -45,7 +47,7 @@ With this role we can initlaize new EC2 instance with specific permissions witho
 In the IAM role we can detrmine that only LocalApp from our user (using the KeyPair) can use this role Name and grant permissions to new instaces on EC2 (e.g. permissions to the Manager to Fully accessed SQS, EC2 and S3).
 
 #
-### S3 buckets
+### S3 buckets format
 To be able to easily distinguish Local App requests we are creating for each LocalApp a new bucket in the following format :
 *"dsp-192-local-app-" + "(first 12 digits of random 64-bit UUID)"*  
 (AWS S3 service require uniq names for new buckets that at most 33 chars long).  
@@ -53,6 +55,21 @@ To be able to easily distinguish Local App requests we are creating for each Loc
 Each LocalApp bucket contains *input-folder* (the input file from the user), *output-folder* (new converted files from the worker) and *result-file.txt* from the Manager to be sent to the LocalApp.
 
 In addition, there is a constant bucket named *mr-dsp-192-pre-upload-jars-scripts* that contains the Worker & Manager Scripts & Jars files and the ManagerApp Logger file if the Manager has been terminated (by error / LocalApp request) named *ManagerLogger.txt*.
+
+#
+### SQS queues
+As described in the system architecture, queues are used for:
+
+* communication between the local application and the manager.
+* communication between the manager and the workers. 
+
+In order to allow optimal running times and supports better scalability we seperate the messages to 5 main queues as follow :  
+
+* queue from LocalApp to ManagerApp - *Header.INPUT_QUEUE_NAME - inputQueue
+* queue from Manager to Manager threads - *Header.INPUT_THREAD_QUEUE_NAME - inputThreadsQueue
+* queue from Manager to Workers - *Header.INPUT_WORKERS_QUEUE_NAME - inputWorkerQueue
+* queue from Workers to Manager - *Header.OUTPUT_WORKERS_QUEUE_NAME - outputWorkerQueue
+* queue from Manager to LocalApp - *Header.OUTPUT_QUEUE_NAME - outputQueue
 
 #
 ### Scalability
