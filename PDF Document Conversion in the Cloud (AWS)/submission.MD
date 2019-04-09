@@ -1,8 +1,8 @@
-<img src="http://codigodelsur.com/wp-content/uploads/2016/02/AmazonWebservices_Logo.svg_.png" width="270">  
+<img src="http://codigodelsur.com/wp-content/uploads/2016/02/AmazonWebservices_Logo.svg_.png" width="250"><img src="https://acrobat.adobe.com/content/dam/doc-cloud/images/acrobat/how-to/create-pdf/adc-fd-create-marquee-1440x200-en.jpg" width="130">  
 
 # Distributed System Programming Cloud Computing and Map Reducce  
 ## PDF Document Conversion in the Cloud (AWS)  
-<img src="https://acrobat.adobe.com/content/dam/doc-cloud/images/acrobat/how-to/create-pdf/adc-fd-create-marquee-1440x200-en.jpg" width="130"> 
+
 
 ### Authors
 *Maor Assayag* - ID 318550746  
@@ -65,11 +65,11 @@ As described in the system architecture, queues are used for:
 
 In order to allow optimal running times and supports better scalability we seperate the messages to 5 main queues as follow :  
 
-* queue from LocalApp to ManagerApp - *Header.INPUT_QUEUE_NAME - inputQueue
-* queue from Manager to Manager threads - *Header.INPUT_THREAD_QUEUE_NAME - inputThreadsQueue
-* queue from Manager to Workers - *Header.INPUT_WORKERS_QUEUE_NAME - inputWorkerQueue
-* queue from Workers to Manager - *Header.OUTPUT_WORKERS_QUEUE_NAME - outputWorkerQueue
-* queue from Manager to LocalApp - *Header.OUTPUT_QUEUE_NAME - outputQueue
+* queue from LocalApp to ManagerApp - *Header.INPUT_QUEUE_NAME* - *inputQueue*
+* queue from Manager to Manager threads - *Header.INPUT_THREAD_QUEUE_NAME - *inputThreadsQueue*
+* queue from Manager to Workers - *Header.INPUT_WORKERS_QUEUE_NAME* - *inputWorkerQueue*
+* queue from Workers to Manager - *Header.OUTPUT_WORKERS_QUEUE_NAME* - *outputWorkerQueue*
+* queue from Manager to LocalApp - *Header.OUTPUT_QUEUE_NAME* - *outputQueue*
 
 #
 ### Scalability
