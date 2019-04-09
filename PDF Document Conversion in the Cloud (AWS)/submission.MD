@@ -1,3 +1,5 @@
+<img src="http://codigodelsur.com/wp-content/uploads/2016/02/AmazonWebservices_Logo.svg_.png" width="300">  
+
 # Distributed System Programming Cloud Computing and Map Reducce
 ## PDF Document Conversion in the Cloud (AWS)
 
@@ -12,7 +14,7 @@ Computer Engineer, Ben-gurion University, Israel
 ### General
 In this assignment we will code a real-world application to distributively process a list of PDF files, perform some operations on them,and display the result on a web page (HTML file).  
 
-Full architecture and the assignment requirements are fully described in the github page
+**Architecture** and the assignment requirements are fully described in the github page
 (its compose mainly from the assignment official page and from our additions) -  
 
 https://github.com/MaorAssayag/Distributed-System-Programming-Cloud-Computing-and-Map-Reducce/tree/master/PDF%20Document%20Conversion%20in%20the%20Cloud%20(AWS)  
@@ -44,7 +46,7 @@ In the IAM role we can detrmine that only LocalApp from our user (using the KeyP
 #
 ### S3 buckets
 To be able to easily distinguish Local App requests we are creating for each LocalApp a new bucket in the following format :
-*dsp-192-local-app- + (first 12 digits of random 64-bit UUID)*  
+*"dsp-192-local-app-" + "(first 12 digits of random 64-bit UUID)"*  
 (AWS S3 service require uniq names for new buckets that at most 33 chars long).  
 
 Each LocalApp bucket contains *input-folder* (the input file from the user), *output-folder* (new converted files from the worker) and *result-file.txt* from the Manager to be sent to the LocalApp.
@@ -82,6 +84,10 @@ If a worker failed due to communiction problems (which did not arise from the co
 The Manager is waiting to get responses for each requests from the *input-file*. To supports scalabilities we don't limit the amount of time the Manager is waiting for all the respones, but after *num_of_lines x 1s / num_of_workers* we are checking if there is still active worker to detecet sudden termination of nodes.  
 
 All stages in the Manager is been logged in a Logger file which is uploaded to the *mr-dsp-192-pre-upload-jars-scripts* bucket as *ManagerLogger.txt* file when the Manager is exsiting (due to Error/LocalApp request from the user) to furter review if required.
+
+#
+### Threads
+
 
 #
 ### How to run the program
