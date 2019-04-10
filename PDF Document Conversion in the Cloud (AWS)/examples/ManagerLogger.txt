@@ -421,8 +421,3 @@ Apr 10, 2019 6:37:03 PM ManagerApp analyzeTextFile
 INFO: 26
 Apr 10, 2019 6:37:04 PM ManagerApp main
 INFO:  Stage 7|    Manager has finished by terminate request from Local App
-
-Apr 10, 2019 6:37:04 PM ManagerApp analyzeTextFile
-INFO: 25
-Apr 10, 2019 6:37:04 PM ManagerApp analyzeTextFile
-INFO: 24
