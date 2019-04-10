@@ -49,7 +49,7 @@ In the IAM role we can detrmine that only LocalApp from our user (using the KeyP
 #
 ### S3 buckets format
 To be able to easily distinguish Local App requests we are creating for each LocalApp a new bucket in the following format :
-*"dsp-192-local-app-" + "(first 12 digits of random 64-bit UUID)"*  
+*"dsp-192-local-app-" + "UUID"* (first 12 digits of random 64-bit)  
 (AWS S3 service require uniq names for new buckets that at most 33 chars long).  
 
 Each LocalApp bucket contains *input-folder* (the input file from the user), *output-folder* (new converted files from the worker) and *result-file.txt* from the Manager to be sent to the LocalApp.
@@ -58,6 +58,7 @@ In addition, there is a constant bucket named *mr-dsp-192-pre-upload-jars-script
 
 #
 ### SQS queues
+#### Queues
 As described in the system architecture, queues are used for:
 
 * communication between the local application and the manager.
@@ -69,7 +70,25 @@ In order to allow optimal running times and supports better scalability we seper
 * queue from Manager to Manager threads - *Header.INPUT_THREAD_QUEUE_NAME - *inputThreadsQueue*
 * queue from Manager to Workers - *Header.INPUT_WORKERS_QUEUE_NAME* - *inputWorkerQueue*
 * queue from Workers to Manager - *Header.OUTPUT_WORKERS_QUEUE_NAME* - *outputWorkerQueue*
-* queue from Manager to LocalApp - *Header.OUTPUT_QUEUE_NAME* - *outputQueue*
+* queue from Manager to LocalApp - *Header.OUTPUT_QUEUE_NAME* - *outputQueue*  
+
+#### Messages format
+* from *Local app* to the *Manager* and from the *Manager* to the *Manager inner Threads*:
+     * message = *LocalAppID* + " " + *terminate* + " " + *n* + " " + *uploadedFileURL*
+     * parsedMessage[0] = localAppID, first 12 is shortLocalAppID
+     * parsedMessage[1] = terminate, true/false
+     * parsedMessage[2] = n , number of workers so the LocalApp will compute locally how many workers needed **(numOfPdfs / n)**, with the limit of 19 *Workers* as mention above.
+     * parsedMessage[3] = uploadedFileURL, input file URL in S3   
+     
+* from the *Workers* to the *Manager* :
+    * message = outputLine = *operation* + ":" + "\t" + *pdfURL* + "\t" + *resultsURL* or *Error message*;
+    * parsedMessage[0] = operation, describe what to do with the first page of the PDF - *ToImage / ToHTML / ToText*
+    * parsedMessage[1] = pdfURL. the input file orginial URL online
+    * parsedMessage[2] = the *result file URL* on the LocalApp S3 bucket \ short desription of an *Exception* if occurred during conversion
+  
+* from the *Manager* to the *Local App* :
+    * final reult message = *shortLocalAppID* (first 12 chars) + " " + *resultURL*
+    * final terminate message ACK = *Terminated* + *shortLocalAppID* (first 12 chars)                            
 
 #
 ### Scalability
@@ -113,7 +132,7 @@ To achieve this in *ManagerApp.java* a ThreadPoolExceture handles up to *10* thr
 
 We tested the integrity of the system concurrency by running several local applications (each one for a different *input file*) and montoring the Manager Logger, SQS queues, S3 buckets & EC2 instances online.  
 
-Its important to note that this system architecture is all based on distributed system programming and cloud computing utilizing AWS services.
+Its important to note that this system architecture is all based on distributed system programming and cloud computing utilizing AWS services.  By distributing storage and computation across many instances / buckets, the resource can grow with demand while remaining economical at every size.
 
 #
 ### Termination process
@@ -132,14 +151,56 @@ Once the *Local App* (waiting for answear from the *Manager* to be terminated) r
 #
 ### Distribution
 #### Diterbuted work among Workers
+While the manager creates a node for every n messages, it does not delegate messages to specific nodes. All of the worker nodes take their messages from the same SQS queue - inputWorkerQueue; so it might be the case that with 2n messages, hence two worker nodes, one node processed n+(n/2) messages, while the other processed only n/2.  
+
+The difference in performance for each *Worker* is mainly due to differences in reaction times from the various sites \ PDF size and the content / action required to perform.  
+
+The assignment of requests to a specific *Worker* and an equal distribution in advance will harm the principles of decentralization and the overall timing of the system.
 
 #### Blocking sections
+The integration of threads in the *Manager* allow it to receiving new requests from *LocalApps* while other threads handling the requests separately - elmentaing the blocking of the main bottleneck of the system.  
 
-    Are all your workers working hard? Or some are slacking? Why?
-    Is your manager doing more work than he's supposed to? Have you made sure each part of your system has properly defined tasks? Did you mix their tasks? Don't!
-    Lastly, are you sure you understand what distributed means? Is there anything in your system awaiting another? 
+The *Workers* runs smoothly - get new request from the *Manager*, convert the file, upload the results and keep listening to new requests.  
+
+Finally, the *Local App* is blocked until an answer will be sent from the *Manager* - accordingly to the system architecture.
 
 #
-### How to run the program
+### Running the Application
+#### Updating jars/scripts files in S3
+Everytime you change the *LocalApp.java*, *ManagerApp.java*, *Worker.java*, *Header.java* or *mAWS.java* files you should upload the Manager jar & Worker jar to S3.
 
+Currently all jars & scripts files are in the S3 bucket named *"mr-dsp-192-pre-upload-jars-scripts"*.   
 
+Nothing is hard coded, and everything is easliy changeable in the Header.java file.  
+
+In *LocalApp.java* there is 2 booleans in the Main class - overwriteJars & overwriteScripts which is *false* by default, simply change them to *true* to be able to upload the jars when running *LocalApp*.
+
+In *LocalApp.java* **uploadJars** and **uploadScripts** methods update the path to the jars files in your project.
+
+Update the vars in Header.java that conatining uniqe names , e.g. pre-upload bucket (LocalApp bucket conatining random UUID so no worry there).
+
+#### How to create the jars files ?
+We build our projcet in Intellij on java 1.6 (max version supported by AWS EC2 instances).  
+
+There you can build jars files from Java files using *Build Artifacts* with auto detect which jars needed in the package ~100MB, [for more information.](https://www.jetbrains.com/help/idea/working-with-artifacts.html)  
+
+The scripts are simple Base64 text files represting [Bash scripts](https://linuxhint.com/bash_base64_encode_decode/).  
+
+####  Set up your AWS 
+* Create **KeyPair** and download the private key to test locally (running Local App) in managerInstance.pem (a text file containting the private key from AWS), [for more information](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html).  
+You can download AWS tool-kit in Intellij (tool-kit store) just to make sure the credentials are working properly.
+
+* Create **IAM role**, set a name (prefer same as the KeyPair name) to it and give it to new EC2 instances when initalizing them (*mAWS.java, initEC2instance method, String KeyName*). Make sure that you give this IAM role fully access permissions to SQS, EC2 and S3. [for more information](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html).  
+
+#### Example of input file / output file
+* [input file e.g.]()
+* [output file e.g.]()
+
+#### Run
+in CMD :
+
+        java -jar LocalApp.jar inputFileName outputFileName n [terminate]
+or run in Intellij once configuring a new running configuration.
+
+#
+## Thanks.
