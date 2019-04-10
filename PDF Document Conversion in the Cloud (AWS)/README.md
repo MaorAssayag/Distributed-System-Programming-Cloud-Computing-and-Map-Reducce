@@ -329,8 +329,13 @@ You can download AWS tool-kit in Intellij (tool-kit store) just to make sure the
 * Create **IAM role**, set a name (prefer same as the KeyPair name) to it and give it to new EC2 instances when initalizing them (*mAWS.java, initEC2instance method, String KeyName*). Make sure that you give this IAM role fully access permissions to SQS, EC2 and S3. [for more information](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html).  
 
 #### Example of input file / output file
-* [input file e.g.](https://github.com/MaorAssayag/Distributed-System-Programming-Cloud-Computing-and-Map-Reducce/blob/master/PDF%20Document%20Conversion%20in%20the%20Cloud%20(AWS)/inputFile.txt)
-* [output file e.g.](https://github.com/MaorAssayag/Distributed-System-Programming-Cloud-Computing-and-Map-Reducce/blob/master/PDF%20Document%20Conversion%20in%20the%20Cloud%20(AWS)/outputFile.HTML) - download it and open it via your browser to see clearly the results
+* [input file e.g.](https://github.com/MaorAssayag/Distributed-System-Programming-Cloud-Computing-and-Map-Reducce/blob/master/PDF%20Document%20Conversion%20in%20the%20Cloud%20(AWS)/examples/inputFile.txt) - its all the same request trying to invoke some errors  
+
+* [output file e.g.](https://github.com/MaorAssayag/Distributed-System-Programming-Cloud-Computing-and-Map-Reducce/blob/master/PDF%20Document%20Conversion%20in%20the%20Cloud%20(AWS)/examples/outputFile.HTML) - download it and open it via your browser to see clearly the results  
+
+* [Manager Logger e.g.](https://github.com/MaorAssayag/Distributed-System-Programming-Cloud-Computing-and-Map-Reducce/blob/master/PDF%20Document%20Conversion%20in%20the%20Cloud%20(AWS)/examples/ManagerLogger.txt)  
+
+* [LocalApp Logger e.g.](https://github.com/MaorAssayag/Distributed-System-Programming-Cloud-Computing-and-Map-Reducce/blob/master/PDF%20Document%20Conversion%20in%20the%20Cloud%20(AWS)/examples/LocalAppLogger.txt)  
 
 #### Run
 in CMD :
