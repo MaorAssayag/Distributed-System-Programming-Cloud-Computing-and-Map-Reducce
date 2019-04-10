@@ -64,7 +64,7 @@ As described in the system architecture, queues are used for:
 * communication between the local application and the manager.
 * communication between the manager and the workers. 
 
-In order to allow optimal running times and supports better scalability we seperate the messages to 5 main queues as follow :  
+In order to allow optimal running times and supports better scalability we seperate the messages to 5 main queues as follow:  
 
 * queue from LocalApp to ManagerApp - *Header.INPUT_QUEUE_NAME* - *inputQueue*
 * queue from Manager to Manager threads - *Header.INPUT_THREAD_QUEUE_NAME - *inputThreadsQueue*
@@ -193,8 +193,8 @@ You can download AWS tool-kit in Intellij (tool-kit store) just to make sure the
 * Create **IAM role**, set a name (prefer same as the KeyPair name) to it and give it to new EC2 instances when initalizing them (*mAWS.java, initEC2instance method, String KeyName*). Make sure that you give this IAM role fully access permissions to SQS, EC2 and S3. [for more information](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html).  
 
 #### Example of input file / output file
-* [input file e.g.]()
-* [output file e.g.]()
+* [input file e.g.](https://github.com/MaorAssayag/Distributed-System-Programming-Cloud-Computing-and-Map-Reducce/blob/master/PDF%20Document%20Conversion%20in%20the%20Cloud%20(AWS)/inputFile.txt)
+* [output file e.g.](https://github.com/MaorAssayag/Distributed-System-Programming-Cloud-Computing-and-Map-Reducce/blob/master/PDF%20Document%20Conversion%20in%20the%20Cloud%20(AWS)/outputFile.HTML) - download it and open it via your browser to see clearly the results
 
 #### Run
 in CMD :
