@@ -5,6 +5,7 @@
 ## Notes
 * To test locally (running Local App) managerInstance.pem (a text file containting the private key from AWS) is not public.
 * The 2 jars files is too big to be here, just build the artifact to Worker.java and Manager.java in intellij to output 2 jars files (suppose to be on the S3, general pre-load bucket, for us is already there).
+* more on that - in the running section at the end.
 
 ## Abstract
 In this assignment we will code a real-world application to distributively process a list of PDF files, perform some operations on them, and display the result on a web page. 
