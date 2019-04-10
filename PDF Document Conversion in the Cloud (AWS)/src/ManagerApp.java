@@ -59,7 +59,7 @@ public class ManagerApp {
                     if (!keepAlive){
                         break;
                     }
-                    try {Thread.sleep(Header.sleep);}
+                    try {Thread.sleep(Header.SLEEP_LONG);}
                     catch (InterruptedException e){logger.warning(e.toString());}
                 }
                 if (!keepAlive) {
@@ -79,9 +79,9 @@ public class ManagerApp {
                         try{
                             List<Message> messagesThread = new ArrayList<Message>();
                             while (messagesThread.isEmpty()) {
-                                messagesThread = get1MessageFromSQS(myAWS, myAWSsqsURL.get(Header.INPUT_THREAD_QUEUE_NAME), 60);
+                                messagesThread = get1MessageFromSQS(myAWS, myAWSsqsURL.get(Header.INPUT_THREAD_QUEUE_NAME), 180);
 
-                                try {Thread.sleep(Header.sleep);}
+                                try {Thread.sleep(Header.SLEEP_MID);}
                                 catch (InterruptedException e){logger.warning(e.toString());}
                             }
                             Message messageCurr = messagesThread.get(0);
@@ -137,17 +137,17 @@ public class ManagerApp {
                             if (Boolean.parseBoolean(parsedMessage[1])){
                                 logger.info(" Stage 6|    Terminate request received, terminating "+ instancesId.size() + " workers instances..."  + "\n");
 
-                                // Terminate all workers instances start by this Manager
-                                myAWS.terminateEC2instance(instancesId);
-
                                 // Stop retrieving messages from the input queue, and wait for stopping the running
                                 keepAlive = false;
+
+                                // Terminate all workers instances start by this Manager
+                                myAWS.terminateEC2instance(instancesId);
 
                                 // Stop the thread pool executor
                                 executor.shutdown();
 
                                 // Terminate the worker instances
-                                try {Thread.sleep(500);}
+                                try {Thread.sleep(Header.SLEEP_LONG);}
                                 catch (InterruptedException e){logger.warning(e.toString());}
 
                                 while (checkWorkers(myAWS) > 0){
@@ -155,7 +155,7 @@ public class ManagerApp {
                                     instancesId.addAll(myAWS.getEC2instancesByTagState(TAG_WORKER, "pending"));
                                     myAWS.terminateEC2instance(instancesId);
 
-                                    try {Thread.sleep(Header.sleep);}
+                                    try {Thread.sleep(Header.SLEEP_LONG);}
                                     catch (InterruptedException e){logger.warning(e.toString());}
                                 }
 
@@ -201,6 +201,10 @@ public class ManagerApp {
 
                 // Attach a thread to handle this task
                 executor.execute(newTask);
+
+                // Wait a little - to enable AWS updating instances status
+                try {Thread.sleep(Header.SLEEP_SMALL_MID);}
+                catch (InterruptedException e){logger.warning(e.toString());}
             }
             logger.info(" Stage 7|    Manager has finished by terminate request from Local App" + "\n");
 
@@ -296,23 +300,25 @@ public class ManagerApp {
             new java.util.Timer().schedule(new TimerTask(){
                 @Override
                 public void run() {
-                    logger.info("Schedule checking for sudden termination");
-                    int curr = checkWorkers(myAWS);
-                    if (curr < currWorkers){
-                        logger.info("             Adding " + (currWorkers-curr) + " instances of Workers to total of " + currWorkers +" Workers \n");
-                        instancesId.addAll(myAWS.initEC2instance(Header.imageID,
-                                1,
-                                (currWorkers-curr),
-                                InstanceType.T2Micro.toString(),
-                                Header.PRE_UPLOAD_BUCKET_NAME,
-                                Header.WORKER_SCRIPT,
-                                Header.INSTANCE_WORKER_KEY_NAME,
-                                TAG_WORKER));
-                        currWorkers = checkWorkers(myAWS);
+                    if (keepAlive){
+                        logger.info("Schedule checking for sudden termination");
+                        int curr = checkWorkers(myAWS);
+                        if (curr < currWorkers){
+                            logger.info("             Adding " + (currWorkers-curr) + " instances of Workers to total of " + currWorkers +" Workers \n");
+                            instancesId.addAll(myAWS.initEC2instance(Header.imageID,
+                                    1,
+                                    (currWorkers-curr),
+                                    InstanceType.T2Micro.toString(),
+                                    Header.PRE_UPLOAD_BUCKET_NAME,
+                                    Header.WORKER_SCRIPT,
+                                    Header.INSTANCE_WORKER_KEY_NAME,
+                                    TAG_WORKER));
+                            currWorkers = checkWorkers(myAWS);
+                        }
                     }
                     // after *num_of_lines x 1s / num_of_workers* we are checking if there is still active worker to detect sudden termination of nodes.
                 }
-            },1000*(count+1)/(currWorkers+1),1000*(count+1)/(currWorkers+1));
+            },2000*(count+1)/(currWorkers+1),2000*(count+1)/(currWorkers+1));
 
 
             // Waiting for workers to process all the requests
@@ -330,7 +336,7 @@ public class ManagerApp {
                     logger.info(""+count);
                 }
                 // "busy"-wait for 0.5 second while workers keep completing other requests
-                try {Thread.sleep(Header.sleepFetchingFromWorkers);}
+                try {Thread.sleep(Header.SLEEP_SMALL);}
                 catch (InterruptedException e){
                     logger.warning(e.toString());
                 }

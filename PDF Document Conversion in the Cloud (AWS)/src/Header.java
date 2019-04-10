@@ -56,7 +56,8 @@ public class Header {
     static final String OUTPUT_QUEUE_NAME = "outputQueue";
 
     // global waiting time
-    static final int sleep = 2000;
-    static final int sleepFetchingFromWorkers = 250;
-    static final int localAppWaiting = 2000;
+    static final int SLEEP_LONG = 2000;
+    static final int SLEEP_SMALL = 250;
+    static final int SLEEP_SMALL_MID = 250;
+    static final int SLEEP_MID = 1000;
 }

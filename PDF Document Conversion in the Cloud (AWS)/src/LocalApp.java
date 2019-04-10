@@ -43,7 +43,7 @@ public class LocalApp {
         boolean terminate = false;
 
         boolean overwriteScript = false;
-        boolean overwriteJars = true;
+        boolean overwriteJars = false;
 
         /** 1. if you want to terminate the manager args = inputFileName outputFileName n terminate */
         if (args.length > 3 && args[3].equals("terminate"))
@@ -74,27 +74,32 @@ public class LocalApp {
         try {
             /**2. Start a Manager instance on EC2 (if its not already running) */
             String[] results = checkManager(myAWS);
-            managerID = results[0];
-            if (managerID != null) {
+            if (results[0] != null) {
+                managerID = results[0];
                 // Promotion of running Manager
                 System.out.println("\n Stage 2|    Manager instance already running, Manager ID : " + managerID + "\n");
-            } else {
+
+            } else if (results[2] != null) {
+                managerID = results[2];
+                // Promotion of pending Manager
+                System.out.println("\n Stage 2|    Manager instance already pending, Manager ID : " + managerID + "\n");
+
+            }else {
                 managerID = results[1];
                 Boolean restartResult = false;
-                if (managerID !=null)
-                    restartResult = myAWS.restartEC2instance(managerID);
+                if (managerID !=null) {
+                    restartResult = myAWS.restartEC2instance(managerID);}
+
                 if (restartResult){
                     // Promotion of rebooted Manager
                     System.out.println("\n Stage 2|    Manager instance has been rebooted, Manager ID : " + managerID + "\n");
+
                 } else{
                     managerID = startManager(myAWS, overwriteScript, overwriteJars);
-//                    uploadScripts(myAWS, overwriteScript);
-//                    uploadJars(myAWS, overwriteJars);
                     // Promotion of new Manager
                     System.out.println("             Manager instance has been started, Manager ID : " + managerID + "\n");
                 }
             }
-
 
             /** 3. Upload the input file to this LocalApp S3 bucket in folder INPUT_FOLDER_NAME*/
             //myAWS.mCreateFolderS3(Header.APP_BUCKET_NAME + shortLocalAppID, Header.INPUT_FOLDER_NAME);
@@ -103,10 +108,30 @@ public class LocalApp {
 
 
             /** 4. Send the uploaded file URL to the SQS queue*/
-            if (n > 19){
-                n = 19;
-                System.out.println("             Free-tire on EC2 supports up to 19 T2.micro instances of workers, n decreased to 19\n");
+            // How many lines in input-file ?
+            int numOfLines = 0;
+            try {
+                FileReader       input = new FileReader(inputFileName);
+                LineNumberReader count = new LineNumberReader(input);
+                while (count.skip(Long.MAX_VALUE) > 0) {}
+                numOfLines = count.getLineNumber() + 1;
+            }catch (Exception e){
+                e.printStackTrace();
             }
+            System.out.println("             Counted " + numOfLines + " lines in the input-file \n");
+
+            int numOfWorkers = 1;
+            if (n != 0 && numOfLines != 0){
+                numOfWorkers = numOfLines / n ;
+            }
+            if (numOfWorkers > 19){
+                n = 19;
+                System.out.println("             Free-tire on EC2 supports up to 19 T2.micro instances of workers, requesting 19\n");
+            } else{
+                n = numOfWorkers;
+            }
+            System.out.println("             Requesting " + n + " Workers to handle this request, each one suppose to handle " + (numOfLines/n) +" PDF's\n");
+
             String msg = LocalAppID + " " + terminate + " " + n + " " + uploadedFileURL;
             send2SQS(myAWS, msg);
             if (terminate){
@@ -131,7 +156,7 @@ public class LocalApp {
 
             /** 7. Send a terminate message to the manager if it received terminate as one of the input arguments*/
             if (terminate) {
-                endManager(myAWS, managerID, Header.localAppWaiting);
+                endManager(myAWS, managerID, Header.SLEEP_MID);
                 System.out.println("\n Stage 7|    Manager has been terminated as requested \n");
                 System.out.println("\n Stage 8|    Local AWS App finished with terminating the Manager");
             }else
@@ -196,9 +221,10 @@ public class LocalApp {
      * @return instanceID if manager found, else null
      */
     private static String[] checkManager(mAWS myAWS) {
-        String[] results = new String[2];
+        String[] results = new String[3];
         results[0] = myAWS.getEC2instanceID(TAG_MANAGER, "running");
-        results[1] = myAWS.getEC2instanceID(TAG_MANAGER, "stopped");
+        results[1] = myAWS.getEC2instanceID(TAG_MANAGER, "pending");
+        results[2] = myAWS.getEC2instanceID(TAG_MANAGER, "stopped");
         return results;
     }
 
@@ -357,8 +383,8 @@ public class LocalApp {
             System.out.println("             Worker script has been uploaded to " + path2 + "\n");
 
         }else{
-            System.out.println("             Manager script already exist" + "\n");
-            System.out.println("             Worker script already exist" + "\n");
+            System.out.println("             Manager script was not overwrite as configured" + "\n");
+            System.out.println("             Worker script was not overwrite as configured" + "\n");
         }
     }
 
@@ -379,8 +405,8 @@ public class LocalApp {
             System.out.println("             Worker.jar has been uploaded to " + path2 + "\n");
 
         }else{
-            System.out.println("             Manager jar already exist" + "\n");
-            System.out.println("             Worker jar already exist" + "\n");
+            System.out.println("             Manager jar was not overwrite as configured" + "\n");
+            System.out.println("             Worker jar was not overwrite as configured" + "\n");
         }
     }
 }

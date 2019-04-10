@@ -51,7 +51,7 @@ public class Worker {
                 while (messages.isEmpty()) {
                     messages = get1MessageFromSQS(myAWS, myAWSsqsURL.get(Header.INPUT_WORKERS_QUEUE_NAME));
 
-                    try {Thread.sleep(Header.sleep);}
+                    try {Thread.sleep(Header.SLEEP_SMALL_MID);}
                     catch (InterruptedException e){e.printStackTrace();}
                 }
 
@@ -207,6 +207,10 @@ public class Worker {
                     File file = new File(new java.io.File( "." ).getCanonicalPath() + File.separator + Header.HTML_NAME+".html");
                     String newURL = myAWS.mUploadS3(Header.APP_BUCKET_NAME+shortLocalAppID, Header.OUTPUT_FOLDER_NAME, workerID+index+".html", file);
                     outputLine = outputLine + newURL;
+                    if (newURL == null){
+                        // then something happen to the upload process
+                        outputLine = null;
+                    }
 
                 }else{
                     outputLine = outputLine + "Error: Unsupported operation: " + operation;
@@ -215,8 +219,27 @@ public class Worker {
                 outputLine = outputLine + "Error: File is Encrypted";
             }
             pddDocument.close();
+
+        } catch (AmazonServiceException ase) {
+            // if the problem is with AWS service return null so other worker will try to handle this request
+            System.out.println("Caught an AmazonServiceException, which means your request made it "
+                    + "to Amazon S3, but was rejected with an error response for some reason.");
+            System.out.println("Error Message:    " + ase.getMessage());
+            System.out.println("HTTP Status Code: " + ase.getStatusCode());
+            System.out.println("AWS Error Code:   " + ase.getErrorCode());
+            System.out.println("Error Type:       " + ase.getErrorType());
+            System.out.println("Request ID:       " + ase.getRequestId());
+            outputLine = null;
+
+        } catch (AmazonClientException ace) {
+            // if the problem is with AWS service return null so other worker will try to handle this request
+            System.out.println("Caught an AmazonClientException, which means the client encountered "
+                    + "a serious internal problem while trying to communicate with S3, "
+                    + "such as not being able to access the network.");
+            System.out.println("Error Message: " + ace.getMessage());
+            outputLine = null;
+
         } catch (Exception e) {
-            //e.printStackTrace();
             try{
                 //outputLine = outputLine + "Error:" + e.getCause().getMessage();
                 outputLine = outputLine + "Error: PDF file not found - " + e.getClass().getName();

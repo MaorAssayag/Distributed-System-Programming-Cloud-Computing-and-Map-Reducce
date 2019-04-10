@@ -1,0 +1,428 @@
+Apr 10, 2019 6:35:27 PM ManagerApp main
+INFO:  Stage 1|    Manager App has been started on EC2 instance
+
+Apr 10, 2019 6:35:30 PM ManagerApp main
+INFO:  Stage 2|    Start listening to the following queue : inputQueue
+
+Apr 10, 2019 6:35:32 PM ManagerApp main
+INFO:  General|    Attaching a thread to handle new task request from a Local App 
+
+Apr 10, 2019 6:35:33 PM ManagerApp$1 run
+INFO:  Stage 3|    Retrieved the following message from a Local App: 
+
+Apr 10, 2019 6:35:33 PM ManagerApp$1 run
+INFO:              4d9ff658-f814-437a-8d51-b7a50936cf98 true 1 https://s3.amazonaws.com/dsp-192-local-app-4d9ff658-f81/input-folder/input-file.txt
+
+Apr 10, 2019 6:35:34 PM ManagerApp$1 run
+INFO:              Adding 1 instances of Workers
+
+Apr 10, 2019 6:35:36 PM ManagerApp$1 run
+INFO:              Thread handling this task
+
+Apr 10, 2019 6:35:36 PM ManagerApp$1 run
+INFO:  Stage 4|    Analyzing the following input file : https://s3.amazonaws.com/dsp-192-local-app-4d9ff658-f81/input-folder/input-file.txt
+
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO:              Sending all the requests from the input file to workers 
+             
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 0
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 1
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 2
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 3
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 4
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 5
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 6
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 7
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 8
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 9
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 10
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 11
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 12
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 13
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 14
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 15
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 16
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 17
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 18
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 19
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 20
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 21
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 22
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 23
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 24
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 25
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 26
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 27
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 28
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 29
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 30
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 31
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 32
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 33
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 34
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 35
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 36
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 37
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 38
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 39
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 40
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 41
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 42
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 43
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 44
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 45
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 46
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 47
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 48
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 49
+Apr 10, 2019 6:35:36 PM ManagerApp analyzeTextFile
+INFO: 
+             Fetching messages from workers 
+             
+Apr 10, 2019 6:36:27 PM ManagerApp$2 run
+INFO: Schedule checking for sudden termination
+Apr 10, 2019 6:36:28 PM ManagerApp analyzeTextFile
+INFO: 49
+Apr 10, 2019 6:36:30 PM ManagerApp analyzeTextFile
+INFO: 48
+Apr 10, 2019 6:36:31 PM ManagerApp analyzeTextFile
+INFO: 47
+Apr 10, 2019 6:36:31 PM ManagerApp analyzeTextFile
+INFO: 46
+Apr 10, 2019 6:36:31 PM ManagerApp analyzeTextFile
+INFO: 45
+Apr 10, 2019 6:36:32 PM ManagerApp analyzeTextFile
+INFO: 44
+Apr 10, 2019 6:36:32 PM ManagerApp analyzeTextFile
+INFO: 43
+Apr 10, 2019 6:36:32 PM ManagerApp analyzeTextFile
+INFO: 42
+Apr 10, 2019 6:36:33 PM ManagerApp analyzeTextFile
+INFO: 41
+Apr 10, 2019 6:36:33 PM ManagerApp analyzeTextFile
+INFO: 40
+Apr 10, 2019 6:36:33 PM ManagerApp analyzeTextFile
+INFO: 39
+Apr 10, 2019 6:36:33 PM ManagerApp analyzeTextFile
+INFO: 38
+Apr 10, 2019 6:36:34 PM ManagerApp analyzeTextFile
+INFO: 37
+Apr 10, 2019 6:36:34 PM ManagerApp analyzeTextFile
+INFO: 36
+Apr 10, 2019 6:36:35 PM ManagerApp analyzeTextFile
+INFO: 35
+Apr 10, 2019 6:36:35 PM ManagerApp analyzeTextFile
+INFO: 34
+Apr 10, 2019 6:36:36 PM ManagerApp analyzeTextFile
+INFO: 33
+Apr 10, 2019 6:36:36 PM ManagerApp analyzeTextFile
+INFO: 32
+Apr 10, 2019 6:36:36 PM ManagerApp analyzeTextFile
+INFO: 31
+Apr 10, 2019 6:36:36 PM ManagerApp analyzeTextFile
+INFO: 30
+Apr 10, 2019 6:36:37 PM ManagerApp analyzeTextFile
+INFO: 29
+Apr 10, 2019 6:36:37 PM ManagerApp analyzeTextFile
+INFO: 28
+Apr 10, 2019 6:36:37 PM ManagerApp analyzeTextFile
+INFO: 27
+Apr 10, 2019 6:36:38 PM ManagerApp analyzeTextFile
+INFO: 26
+Apr 10, 2019 6:36:38 PM ManagerApp analyzeTextFile
+INFO: 25
+Apr 10, 2019 6:36:38 PM ManagerApp analyzeTextFile
+INFO: 24
+Apr 10, 2019 6:36:38 PM ManagerApp main
+INFO:  General|    Attaching a thread to handle new task request from a Local App 
+
+Apr 10, 2019 6:36:38 PM ManagerApp analyzeTextFile
+INFO: 23
+Apr 10, 2019 6:36:39 PM ManagerApp analyzeTextFile
+INFO: 22
+Apr 10, 2019 6:36:40 PM ManagerApp$1 run
+INFO:  Stage 3|    Retrieved the following message from a Local App: 
+
+Apr 10, 2019 6:36:40 PM ManagerApp$1 run
+INFO:              9f4ae8da-8b86-4762-bc3d-5fa3341477ce true 5 https://s3.amazonaws.com/dsp-192-local-app-9f4ae8da-8b8/input-folder/input-file.txt
+
+Apr 10, 2019 6:36:40 PM ManagerApp analyzeTextFile
+INFO: 21
+Apr 10, 2019 6:36:40 PM ManagerApp$1 run
+INFO:              Adding 4 instances of Workers
+
+Apr 10, 2019 6:36:40 PM ManagerApp analyzeTextFile
+INFO: 20
+Apr 10, 2019 6:36:41 PM ManagerApp analyzeTextFile
+INFO: 19
+Apr 10, 2019 6:36:41 PM ManagerApp analyzeTextFile
+INFO: 18
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 17
+Apr 10, 2019 6:36:42 PM ManagerApp$1 run
+INFO:              Thread handling this task
+
+Apr 10, 2019 6:36:42 PM ManagerApp$1 run
+INFO:  Stage 4|    Analyzing the following input file : https://s3.amazonaws.com/dsp-192-local-app-9f4ae8da-8b8/input-folder/input-file.txt
+
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO:              Sending all the requests from the input file to workers 
+             
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 0
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 1
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 2
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 3
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 4
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 5
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 6
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 7
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 8
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 9
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 10
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 16
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 11
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 12
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 13
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 14
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 15
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 16
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 17
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 18
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 19
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 20
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 21
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 22
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 23
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 24
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 25
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 26
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 27
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 28
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 29
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 30
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 31
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 32
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 33
+Apr 10, 2019 6:36:42 PM ManagerApp analyzeTextFile
+INFO: 34
+Apr 10, 2019 6:36:43 PM ManagerApp analyzeTextFile
+INFO: 35
+Apr 10, 2019 6:36:43 PM ManagerApp analyzeTextFile
+INFO: 36
+Apr 10, 2019 6:36:43 PM ManagerApp analyzeTextFile
+INFO: 15
+Apr 10, 2019 6:36:43 PM ManagerApp analyzeTextFile
+INFO: 37
+Apr 10, 2019 6:36:43 PM ManagerApp analyzeTextFile
+INFO: 38
+Apr 10, 2019 6:36:43 PM ManagerApp analyzeTextFile
+INFO: 39
+Apr 10, 2019 6:36:43 PM ManagerApp analyzeTextFile
+INFO: 40
+Apr 10, 2019 6:36:43 PM ManagerApp analyzeTextFile
+INFO: 41
+Apr 10, 2019 6:36:43 PM ManagerApp analyzeTextFile
+INFO: 42
+Apr 10, 2019 6:36:43 PM ManagerApp analyzeTextFile
+INFO: 43
+Apr 10, 2019 6:36:43 PM ManagerApp analyzeTextFile
+INFO: 44
+Apr 10, 2019 6:36:43 PM ManagerApp analyzeTextFile
+INFO: 45
+Apr 10, 2019 6:36:43 PM ManagerApp analyzeTextFile
+INFO: 46
+Apr 10, 2019 6:36:43 PM ManagerApp analyzeTextFile
+INFO: 47
+Apr 10, 2019 6:36:43 PM ManagerApp analyzeTextFile
+INFO: 48
+Apr 10, 2019 6:36:43 PM ManagerApp analyzeTextFile
+INFO: 49
+Apr 10, 2019 6:36:43 PM ManagerApp analyzeTextFile
+INFO: 
+             Fetching messages from workers 
+             
+Apr 10, 2019 6:36:45 PM ManagerApp analyzeTextFile
+INFO: 49
+Apr 10, 2019 6:36:45 PM ManagerApp analyzeTextFile
+INFO: 14
+Apr 10, 2019 6:36:45 PM ManagerApp analyzeTextFile
+INFO: 48
+Apr 10, 2019 6:36:46 PM ManagerApp analyzeTextFile
+INFO: 13
+Apr 10, 2019 6:36:46 PM ManagerApp analyzeTextFile
+INFO: 47
+Apr 10, 2019 6:36:46 PM ManagerApp analyzeTextFile
+INFO: 12
+Apr 10, 2019 6:36:46 PM ManagerApp analyzeTextFile
+INFO: 46
+Apr 10, 2019 6:36:48 PM ManagerApp analyzeTextFile
+INFO: 45
+Apr 10, 2019 6:36:48 PM ManagerApp analyzeTextFile
+INFO: 11
+Apr 10, 2019 6:36:48 PM ManagerApp analyzeTextFile
+INFO: 44
+Apr 10, 2019 6:36:49 PM ManagerApp analyzeTextFile
+INFO: 43
+Apr 10, 2019 6:36:49 PM ManagerApp analyzeTextFile
+INFO: 10
+Apr 10, 2019 6:36:50 PM ManagerApp analyzeTextFile
+INFO: 9
+Apr 10, 2019 6:36:50 PM ManagerApp analyzeTextFile
+INFO: 42
+Apr 10, 2019 6:36:51 PM ManagerApp analyzeTextFile
+INFO: 8
+Apr 10, 2019 6:36:51 PM ManagerApp analyzeTextFile
+INFO: 41
+Apr 10, 2019 6:36:51 PM ManagerApp analyzeTextFile
+INFO: 40
+Apr 10, 2019 6:36:52 PM ManagerApp analyzeTextFile
+INFO: 7
+Apr 10, 2019 6:36:54 PM ManagerApp analyzeTextFile
+INFO: 39
+Apr 10, 2019 6:36:54 PM ManagerApp analyzeTextFile
+INFO: 38
+Apr 10, 2019 6:36:54 PM ManagerApp analyzeTextFile
+INFO: 6
+Apr 10, 2019 6:36:54 PM ManagerApp analyzeTextFile
+INFO: 37
+Apr 10, 2019 6:36:55 PM ManagerApp analyzeTextFile
+INFO: 5
+Apr 10, 2019 6:36:55 PM ManagerApp analyzeTextFile
+INFO: 36
+Apr 10, 2019 6:36:56 PM ManagerApp analyzeTextFile
+INFO: 35
+Apr 10, 2019 6:36:56 PM ManagerApp analyzeTextFile
+INFO: 4
+Apr 10, 2019 6:36:57 PM ManagerApp analyzeTextFile
+INFO: 34
+Apr 10, 2019 6:36:57 PM ManagerApp analyzeTextFile
+INFO: 3
+Apr 10, 2019 6:36:57 PM ManagerApp analyzeTextFile
+INFO: 33
+Apr 10, 2019 6:36:58 PM ManagerApp analyzeTextFile
+INFO: 32
+Apr 10, 2019 6:36:59 PM ManagerApp analyzeTextFile
+INFO: 2
+Apr 10, 2019 6:36:59 PM ManagerApp analyzeTextFile
+INFO: 31
+Apr 10, 2019 6:37:00 PM ManagerApp$2 run
+INFO: Schedule checking for sudden termination
+Apr 10, 2019 6:37:00 PM ManagerApp analyzeTextFile
+INFO: 1
+Apr 10, 2019 6:37:00 PM ManagerApp analyzeTextFile
+INFO: 30
+Apr 10, 2019 6:37:01 PM ManagerApp analyzeTextFile
+INFO: 29
+Apr 10, 2019 6:37:01 PM ManagerApp analyzeTextFile
+INFO: 0
+Apr 10, 2019 6:37:02 PM ManagerApp$1 run
+INFO: 
+ Stage 5|    Computing complete, Sending the following message to the output queue : 
+
+Apr 10, 2019 6:37:02 PM ManagerApp$1 run
+INFO:                4d9ff658-f81 https://s3.amazonaws.com/dsp-192-local-app-4d9ff658-f81/result-file.txt
+
+Apr 10, 2019 6:37:02 PM ManagerApp$1 run
+INFO:  Stage 6|    Busy-wait to new messages...
+
+Apr 10, 2019 6:37:02 PM ManagerApp$1 run
+INFO:  Stage 6|    Terminate request received, terminating 5 workers instances...
+
+Apr 10, 2019 6:37:02 PM ManagerApp analyzeTextFile
+INFO: 28
+Apr 10, 2019 6:37:03 PM ManagerApp analyzeTextFile
+INFO: 27
+Apr 10, 2019 6:37:03 PM ManagerApp analyzeTextFile
+INFO: 26
+Apr 10, 2019 6:37:04 PM ManagerApp main
+INFO:  Stage 7|    Manager has finished by terminate request from Local App
+
+Apr 10, 2019 6:37:04 PM ManagerApp analyzeTextFile
+INFO: 25
+Apr 10, 2019 6:37:04 PM ManagerApp analyzeTextFile
+INFO: 24
