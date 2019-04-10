@@ -335,7 +335,7 @@ You can download AWS tool-kit in Intellij (tool-kit store) just to make sure the
 in CMD :
 
         java -jar LocalApp.jar inputFileName outputFileName n [terminate]
-or run in Intellij once configuring a new running configuration.
+or run in Intellij once you configuring a new running configuration.
 
 #
 ### Authors
