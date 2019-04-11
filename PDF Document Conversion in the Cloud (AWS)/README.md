@@ -190,7 +190,7 @@ In the IAM role we can detrmine that only LocalApp from our user (using the KeyP
 ### S3 buckets format
 To be able to easily distinguish Local App requests we are creating for each LocalApp a new bucket in the following format :  
 
-      *"dsp-192-local-app-" + "UUID"* (first 12 digits of random 64-bit)  
+      "dsp-192-local-app-" + "UUID" (first 12 digits of random 64-bit)  
 
 (AWS S3 service require uniq names for new buckets that at most 33 chars long).  
 
